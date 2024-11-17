@@ -26,7 +26,7 @@ class NetworkClient {
     try {
       final response = await request();
       _logResponse(response);
-      if (response.statusCode >= 200) {
+      if (response.statusCode >= 200 && response.statusCode < 300) {
         return Successful(data: response.body);
       } else {
         return Failed(message: 'Error: ${response.statusCode}');

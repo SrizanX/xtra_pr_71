@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xtra_pr_71/presentation/home/internet/connection/connection_card.dart';
 import 'package:xtra_pr_71/presentation/home/internet/internet_cubit.dart';
-
-import 'network_mode.dart';
 
 class InternetScreen extends StatelessWidget {
   const InternetScreen({super.key});
@@ -14,94 +13,26 @@ class InternetScreen extends StatelessWidget {
         var cubit = InternetCubit()..fetchConStat();
         return cubit;
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text("Internet"),
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: BlocBuilder<InternetCubit, InternetState>(
-              builder: (context, state) {
-            if (state.isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else {
-              return Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      /** Network mode */
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("Network mode",
-                              style: Theme.of(context).textTheme.titleMedium),
-                          const SizedBox(width: 16),
-                          DropdownButton<NetworkMode>(
-                            value: state.networkMode,
-                            items: NetworkMode.values
-                                .map(
-                                  (mode) => DropdownMenuItem(
-                                    value: mode,
-                                    child: Text(mode.label),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (selected) {
-                              context
-                                  .read<InternetCubit>()
-                                  .updateNetworkMode(selected);
-                            },
-                          ),
-                        ],
-                      ),
-                      /** Mobile data */
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Mobile Data",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          Switch(
-                              value: state.isMobileDataEnabled,
-                              onChanged: (val) {
-                                context
-                                    .read<InternetCubit>()
-                                    .updateMobileData(val);
-                              }),
-                        ],
-                      ),
-                      /** Roaming */
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Roaming",
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                          Switch(
-                              value: state.isRoamingEnabled,
-                              onChanged: (val) {
-                                context
-                                    .read<InternetCubit>()
-                                    .updateRoaming(val);
-                              }),
-                        ],
-                      ),
-                      FilledButton(
-                          onPressed: () {
-                            context.read<InternetCubit>().apply();
-                          },
-                          child: const Text("Apply"))
-                    ],
-                  ),
-                ),
-              );
-            }
-          }),
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text("Internet"),
+            bottom: const TabBar(tabs: [
+              Tab(icon: Icon(Icons.network_cell)),
+              Tab(icon: Icon(Icons.bar_chart)),
+              Tab(icon: Icon(Icons.settings)),
+            ]),
+          ),
+          body: const TabBarView(children: [
+            Padding(
+              padding: EdgeInsets.all(16),
+              child: ConnectionCard(),
+            ),
+            Padding(
+                padding: EdgeInsets.all(16), child: Text("State and Usage")),
+            Padding(padding: EdgeInsets.all(16), child: Text("Apn Settings")),
+          ]),
         ),
       ),
     );

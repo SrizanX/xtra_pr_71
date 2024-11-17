@@ -1,12 +1,13 @@
 import 'dart:convert';
 
+import 'package:xtra_pr_71/data/network/model/state_response.dart';
 import 'package:xtra_pr_71/domain/result.dart';
 import 'package:xtra_pr_71/domain/type.dart';
 
 import '../network_client.dart';
 
 class LoginApiService {
-  Future<int> callLoginAPi(
+  Future<Result<StateResponse>> callLoginAPi(
       {required String username, required String password}) async {
     const url = "http://192.168.0.1/adminLogin";
     // Set up parameters
@@ -22,10 +23,15 @@ class LoginApiService {
     switch (loginResult) {
       case Successful():
         final decodedJson = jsonDecode(loginResult.data) as JMap;
-        final state = decodedJson['state'];
-        return state;
+        final state =  StateResponse.fromJson(decodedJson);
+
+        if(state.state==1) {
+          return Successful(data: state);
+        } else {
+          return const Failed(message: "Invalid Credential");
+        }
       case Failed():
-        return -1;
+        return  Failed(message: loginResult.message);
     }
   }
 }

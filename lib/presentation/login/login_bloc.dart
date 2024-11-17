@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xtra_pr_71/data/network/api/login_api_service.dart';
+import 'package:xtra_pr_71/data/network/model/state_response.dart';
+import 'package:xtra_pr_71/domain/result.dart';
 
 sealed class LoginUiState {}
 
@@ -17,8 +19,6 @@ class Retry extends LoginUiEvent {}
 class Loading extends LoginUiState {}
 
 class LoginSuccessful extends LoginUiState {}
-
-class InvalidCredential extends LoginUiState {}
 
 class LoginFailed extends LoginUiState {
   String message;
@@ -42,12 +42,12 @@ class LoginBloc extends Bloc<LoginUiEvent, LoginUiState> {
           password: event.password,
         );
 
-        if (responseCode == 1) {
-          emit(LoginSuccessful());
-        } else if (responseCode == 0) {
-          emit(InvalidCredential());
-        } else {
-          emit(Initial());
+        switch (responseCode) {
+          case Successful<StateResponse>():
+            emit(LoginSuccessful());
+          case Failed<StateResponse>():
+            emit(Initial());
+            emit(LoginFailed(message: responseCode.message));
         }
 
       case Retry():

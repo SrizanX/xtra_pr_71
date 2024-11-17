@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:xtra_pr_71/navigation/app_routes.dart';
-
 import 'package:xtra_pr_71/presentation/login/login_bloc.dart';
 import 'package:xtra_pr_71/presentation/login/login_form.dart';
 
@@ -29,7 +28,7 @@ class LoginScreen extends StatelessWidget {
           child: Center(
             child: BlocConsumer<LoginBloc, LoginUiState>(
               builder: (ctx, state) {
-                if (state is Initial || state is InvalidCredential) {
+                if (state is Initial || state is LoginFailed) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -50,9 +49,9 @@ class LoginScreen extends StatelessWidget {
                 if (state is LoginSuccessful) {
                   Navigator.pushReplacementNamed(context, AppRoutes.home);
                 }
-                if (state is InvalidCredential) {
+                if (state is LoginFailed) {
                   Fluttertoast.showToast(
-                      msg: "Invalid Credential",
+                      msg: state.message,
                       toastLength: Toast.LENGTH_SHORT,
                       gravity: ToastGravity.BOTTOM,
                       timeInSecForIosWeb: 1,
