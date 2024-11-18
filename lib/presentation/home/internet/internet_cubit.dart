@@ -1,4 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xtra_pr_71/data/network/api/dashboard_api_service.dart';
+import 'package:xtra_pr_71/domain/entity/device_info.dart';
 import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../data/network/api/internet_state_api_service.dart';

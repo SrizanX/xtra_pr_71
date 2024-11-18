@@ -1,28 +1,25 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:xtra_pr_71/domain/constants.dart';
 
-part 'device_info.g.dart';
-
-@JsonSerializable()
 class DeviceInfo {
   String batteryPercent;
   String functionTimes;
-  String hotcount;
+  int hotcount;
   String hwVersion;
   String imei;
-  Object? imsi;
+  String imsi;
   String ipAddress;
-  String issim;
+  bool issim;
   String macAddress;
   String networkType;
   String networkmask;
   String strengthDbm;
-  String strengthLevel;
+  int strengthLevel;
   String swVersion;
   String wifihotname;
   String wifisafetype;
   String sn;
-  String dashSinr;
-  String dashBand;
+  int dashSinr;
+  int dashBand;
   String dashIccid;
   String devVersion;
 
@@ -49,8 +46,27 @@ class DeviceInfo {
       this.dashIccid,
       this.devVersion);
 
-  factory DeviceInfo.fromJson(Map<String, dynamic> json) =>
-      _$DeviceInfoFromJson(json);
-
-  Map<String, dynamic> toJson() => _$DeviceInfoToJson(this);
+  factory DeviceInfo.fromJson(Map<String, dynamic> json) => DeviceInfo(
+        json['batteryPercent'] ?? cUnknownStr,
+        json['functionTimes'] ?? cUnknownStr,
+        int.tryParse(json['hotcount']) ?? cUnknownInt,
+        json['hwVersion'] ?? cUnknownStr,
+        json['imei'] ?? cUnknownStr,
+        json['imsi'] ?? cUnknownStr,
+        json['ipAddress'] ?? cUnknownStr,
+        json['issim'] == cTrueStr,
+        json['macAddress'] ?? cUnknownStr,
+        json['networkType'] ?? cUnknownStr,
+        json['networkmask'] ?? cUnknownStr,
+        json['strengthDbm'] ?? cUnknownStr,
+        int.tryParse(json['strengthLevel']) ?? cUnknownInt,
+        json['swVersion'] ?? cUnknownStr,
+        json['wifihotname'] ?? cUnknownStr,
+        json['wifisafetype'] ?? cUnknownStr,
+        json['sn'] ?? cUnknownStr,
+        int.tryParse(json['dashSinr']) ?? cUnknownInt,
+        int.tryParse(json['dashBand']) ?? cUnknownInt,
+        json['dashIccid'] ?? cUnknownStr,
+        json['devVersion'] ?? cUnknownStr,
+      );
 }

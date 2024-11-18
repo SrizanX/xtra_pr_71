@@ -1,9 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:xml2json/xml2json.dart';
+import 'package:xtra_pr_71/data/network/api/dashboard_api_service.dart';
 import 'package:xtra_pr_71/domain/entity/device_info.dart';
+import 'package:xtra_pr_71/domain/result.dart';
 import 'package:xtra_pr_71/presentation/home/dashboard/dashboard_item.dart';
 import 'package:xtra_pr_71/presentation/home/dashboard/dashboard_item_card.dart';
 import 'package:xtra_pr_71/presentation/home/dashboard/signal_strength_indicator_widget.dart';
@@ -27,10 +25,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: FutureBuilder(
-          future: _fetchDashboardData(),
-          builder: (BuildContext context, AsyncSnapshot<DeviceInfo> snapshot) {
+          future: DashboardApiService().fetchDashboardData(),
+          builder: (BuildContext context,
+              AsyncSnapshot<Result<DeviceInfo>> snapshot) {
             if (snapshot.hasData) {
-              return buildDashboardUi(snapshot.data!);
+              final result = snapshot.data!;
+              switch (result) {
+                case Successful<DeviceInfo>():
+                  return buildDashboardUi(result.data);
+                case Failed<DeviceInfo>():
+                  return Text(result.message);
+              }
             } else {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -50,7 +55,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             VerticalBatteryIndicator(percentage: info.batteryPercent),
             const SizedBox(width: 24),
-            SignalStrengthIndicatorBar(signalStrength: info.strengthLevel),
+            SignalStrengthIndicatorBar(signalStrength: "${info.strengthLevel}"),
           ],
         ),
         Text("Strength dbm: ${info.strengthDbm}"),
@@ -59,7 +64,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               DashboardItem(label: "Operator:", data: info.networkType),
               DashboardItem(label: "Wan IP:", data: info.ipAddress),
-              DashboardItem(label: "Networkmask:", data: info.networkmask),
+              DashboardItem(label: "Network mask:", data: info.networkmask),
             ],
           ),
         ),
@@ -68,7 +73,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               DashboardItem(label: "Wifi Name: ", data: info.wifihotname),
               DashboardItem(label: "Security: ", data: info.wifisafetype),
-              DashboardItem(label: "Connected Device: ", data: info.hotcount),
+              DashboardItem(
+                  label: "Connected Device: ", data: '${info.hotcount}'),
             ],
           ),
         ),
@@ -83,15 +89,5 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ),
       ],
     );
-  }
-
-  Future<DeviceInfo> _fetchDashboardData() async {
-    const url = "http://192.168.0.1/jsonp_dashboard?callback=";
-    final response = await http.get(Uri.parse(url), headers: {});
-    var xmlParser = Xml2Json();
-    xmlParser.parse(response.body);
-    var decodedJson =
-        jsonDecode(xmlParser.toOpenRally()) as Map<String, dynamic>;
-    return DeviceInfo.fromJson(decodedJson['deviceinfo']);
   }
 }

@@ -12,7 +12,7 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final _usernameController = TextEditingController(text: "adminx");
+  final _usernameController = TextEditingController(text: "admin");
   final _passwordController = TextEditingController(text: "admin");
 
   @override

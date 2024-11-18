@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xtra_pr_71/presentation/home/internet/allowance/allowance_cubit.dart';
 import 'package:xtra_pr_71/presentation/home/internet/connection/connection_card.dart';
 import 'package:xtra_pr_71/presentation/home/internet/internet_cubit.dart';
+
+import 'allowance/allowance_card.dart';
 
 class InternetScreen extends StatelessWidget {
   const InternetScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (ctx) {
-        var cubit = InternetCubit()..fetchConStat();
-        return cubit;
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<InternetCubit>(
+            create: (BuildContext context) => InternetCubit()..fetchConStat()),
+        BlocProvider<AllowanceCubit>(
+            create: (BuildContext context) => AllowanceCubit()..fetchConStat()),
+      ],
       child: DefaultTabController(
         length: 3,
         child: Scaffold(
@@ -27,7 +32,17 @@ class InternetScreen extends StatelessWidget {
           body: const TabBarView(children: [
             Padding(
               padding: EdgeInsets.all(16),
-              child: ConnectionCard(),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ConnectionCard(),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    AllowanceCard()
+                  ],
+                ),
+              ),
             ),
             Padding(
                 padding: EdgeInsets.all(16), child: Text("State and Usage")),
