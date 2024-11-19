@@ -9,14 +9,14 @@ final class ResultMapper {
   factory ResultMapper() => _instance;
 
   Result<DomainModel> map<NetworkModel, DomainModel>({
-    required Result<NetworkModel> response,
+    required Result<NetworkModel> result,
     required Mapper<NetworkModel, DomainModel> mapper,
   }) {
-    switch (response) {
+    switch (result) {
       case Successful<NetworkModel>():
-        return Successful(data: mapper.map(response.data));
+        return Successful(data: mapper.map(result.data));
       case Failed<NetworkModel>():
-        return Failed(message: response.message, exception: response.exception);
+        return Failed(message: result.message, exception: result.exception);
     }
   }
 }

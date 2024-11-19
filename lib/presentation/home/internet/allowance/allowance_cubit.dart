@@ -44,7 +44,20 @@ class AllowanceCubit extends Cubit<AllowanceState> {
     }
   }
 
-  void apply() {
-    print(state.toString());
+  void apply() async {
+    emit(state.copyWith(isLoading: true));
+    final response =
+        await InternetAllowanceApiService().updateInternetAllowance(
+      isUsageLimitEnabled: state.isUsageLimitEnabled,
+      allowance: state.allowance,
+      allowanceUnit: state.allowanceUnit,
+    );
+
+    switch (response) {
+      case Successful():
+        emit(state.copyWith(isLoading: false));
+      case Failed():
+        emit(state.copyWith(isLoading: false));
+    }
   }
 }

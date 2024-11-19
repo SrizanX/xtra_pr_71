@@ -33,19 +33,14 @@ class InternetScreen extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(16),
               child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ConnectionCard(),
-                    SizedBox(
-                      height: 16,
-                    ),
-                    AllowanceCard()
-                  ],
-                ),
+                child: Column(children: [ConnectionCard()]),
               ),
             ),
             Padding(
-                padding: EdgeInsets.all(16), child: Text("State and Usage")),
+                padding: EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: Column(children: [AllowanceCard()]),
+                )),
             Padding(padding: EdgeInsets.all(16), child: Text("Apn Settings")),
           ]),
         ),
