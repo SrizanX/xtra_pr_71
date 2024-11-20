@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:xtra_pr_71/navigation/app_routes.dart';
+import 'package:xtra_pr_71/presentation_v2/home/home_screen.dart';
 
 import '../../design/color_seleection.dart';
 
@@ -20,8 +20,7 @@ class App extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: colorSelected.color),
           brightness: Brightness.dark),
       themeMode: ThemeMode.dark,
-      routes: routesMap,
-      initialRoute: AppRoutes.login,
+      home: HomeScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
