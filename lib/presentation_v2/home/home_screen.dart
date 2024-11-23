@@ -16,13 +16,11 @@ class HomeScreen extends StatelessWidget {
         children: [
           buildAppBar(context),
           const SizedBox(
-            height: 200,
+            height: 20,
           ),
-          Expanded(child: Stack(
-            children: [
-
-              BatteryIndicator(level: 60)
-            ],
+          const Expanded(
+              child: Center(
+            child: BatteryIndicator(capacity: 60),
           )),
           buildToggleButtons(),
           const SizedBox(
