@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_cubit.dart';
+import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_state.dart';
+import 'package:xtra_pr_71/presentation_v2/home/bloc/data_connectivity_cubit.dart';
+import 'package:xtra_pr_71/presentation_v2/home/bloc/data_connectivity_state.dart';
+import 'package:xtra_pr_71/presentation_v2/home/bloc/data_limit_cubit.dart';
+import 'package:xtra_pr_71/presentation_v2/home/bloc/data_limit_state.dart';
 import 'package:xtra_pr_71/presentation_v2/home/components/battery_indicator.dart';
 import 'package:xtra_pr_71/presentation_v2/home/components/power_button.dart';
 import 'package:xtra_pr_71/presentation_v2/home/components/toggle_button.dart';
+import 'package:xtra_pr_71/presentation_v2/settings/settings_route.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -11,24 +19,41 @@ class HomeScreen extends StatelessWidget {
     return Container(
       color: const Color.fromRGBO(41, 43, 68, 100),
       child: SafeArea(
-          child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          buildAppBar(context),
-          const SizedBox(
-            height: 20,
-          ),
-          const Expanded(
-              child: Center(
-            child: BatteryIndicator(capacity: 60),
-          )),
-          buildToggleButtons(),
-          const SizedBox(
-            height: 32,
-          ),
-          buildPowerButton()
-        ],
-      )),
+        child: BlocBuilder<DashboardCubit, DashboardState>(
+          builder: (context, state) {
+            switch (state) {
+              case DashboardLoading():
+                return const CircularProgressIndicator();
+              case DashboardFailed():
+                return Text((state).errorMessage);
+              case DashboardSuccessful():
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    buildAppBar(context),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: BatteryIndicator(
+                            capacity: double.parse((state)
+                                .deviceInfo
+                                .batteryPercent
+                                .replaceAll('%', ''))),
+                      ),
+                    ),
+                    buildToggleButtons(),
+                    const SizedBox(
+                      height: 32,
+                    ),
+                    buildPowerButton()
+                  ],
+                );
+            }
+          },
+        ),
+      ),
     );
   }
 
@@ -52,7 +77,9 @@ class HomeScreen extends StatelessWidget {
           ),
         )),
         IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, SettingsRoute.route);
+            },
             icon: const Icon(
               Icons.settings,
               color: Colors.white,
@@ -62,25 +89,46 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget buildToggleButtons() {
-    return const Row(
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        ToggleButton(
-          icon: Icons.mobiledata_off,
-          label: "Data",
-          isOn: true,
+        BlocSelector<DataConnectivityCubit, DataConnectivityState, bool>(
+          selector: (state) => state.isMobileDataEnabled,
+          builder: (context, isMobileDataEnabled) {
+            return ToggleButton(
+              icon: Icons.mobiledata_off,
+              label: "Data",
+              isOn: isMobileDataEnabled,
+              onTap: () {
+                context.read<DataConnectivityCubit>().toggleMobileData();
+              },
+            );
+          },
         ),
-        ToggleButton(
-          icon: Icons.close_fullscreen_sharp,
-          label: "Limit",
-          isOn: false,
+        BlocSelector<DataConnectivityCubit, DataConnectivityState, bool>(
+          selector: (state) => state.isRoamingEnabled,
+          builder: (context, isRoamingEnabled) {
+            return ToggleButton(
+              icon: Icons.travel_explore,
+              label: "Roaming",
+              onTap: () {
+                context.read<DataConnectivityCubit>().toggleRoaming();
+              },
+              isOn: isRoamingEnabled,
+            );
+          },
         ),
-        //ToggleButton(icon: Icons.four_g_mobiledata, label: "Limit"),
-        ToggleButton(
-          icon: Icons.three_g_mobiledata,
-          label: "Limit",
-          isOn: true,
-        ),
+        BlocBuilder<DataLimitCubit, DataLimitState>(builder: (context, state) {
+          return ToggleButton(
+            icon: Icons.close_fullscreen_sharp,
+            label: "Limit",
+            isOn: state.isUsageLimitEnabled,
+            onTap: () {
+              print("limit");
+              context.read<DataLimitCubit>().toggleLimit();
+            },
+          );
+        }),
       ],
     );
   }

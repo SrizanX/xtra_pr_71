@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class BatteryIndicator extends StatelessWidget {
@@ -8,18 +7,31 @@ class BatteryIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
+    return Column(
       children: [
-        Battery(
-          width: 100,
-          height: 150,
-          color: Colors.grey,
-          capacity: capacity,
-        ),
-        Icon(Icons.flash_on, color: Colors.yellow, size: 44,)
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Battery(
+              width: 100,
+              height: 150,
+              color: Colors.grey,
+              capacity: capacity,
+            ),
+            const Icon(
+              Icons.flash_on,
+              color: Colors.yellow,
+              size: 44,
+            )
 
-        // Battery cap
+            // Battery cap
+          ],
+        ),
+        Text("${capacity.toInt()} %",
+            style: Theme.of(context)
+                .textTheme
+                .headlineLarge
+                ?.copyWith(color: Colors.white))
       ],
     );
   }
@@ -77,8 +89,6 @@ class BatteryPainter extends CustomPainter {
     deltaH = height * .15;
     batteryHeight = height - deltaH;
 
-
-
     paintEmptyCapacity(canvas: canvas);
     paintCapacity(canvas: canvas);
     paintTop(canvas: canvas);
@@ -100,7 +110,7 @@ class BatteryPainter extends CustomPainter {
 
   void paintTop({required Canvas canvas}) {
     double strokeWidth = width * .04;
-    double strokeHalf = strokeWidth/2;
+    double strokeHalf = strokeWidth / 2;
     final paint = Paint()
       ..color = const Color(0xff57f3ba)
       ..style = PaintingStyle.stroke
@@ -112,29 +122,21 @@ class BatteryPainter extends CustomPainter {
     const double startY = 0;
 
     var topLeft = Offset(startX, startY);
-    var topRight = Offset(width-strokeHalf, startY);
+    var topRight = Offset(width - strokeHalf, startY);
 
-    path.moveTo(topLeft.dx, topLeft.dy );
+    path.moveTo(topLeft.dx, topLeft.dy);
 
-
-    path.cubicTo(
-        leftBezierX,  deltaH,
-        rightBezierX, deltaH,
-        topRight.dx, topRight.dy //Left curve point
-    );
+    path.cubicTo(leftBezierX, deltaH, rightBezierX, deltaH, topRight.dx,
+        topRight.dy //Left curve point
+        );
 
     // From Right top to left top with a negative curve
-    path.cubicTo(
-        rightBezierX, -deltaH,
-        leftBezierX,  -deltaH,
-        topLeft.dx, topLeft.dy //Left curve point
-    );
+    path.cubicTo(rightBezierX, -deltaH, leftBezierX, -deltaH, topLeft.dx,
+        topLeft.dy //Left curve point
+        );
 
     path.close(); // line to 0,0
     canvas.drawPath(path, paint);
-
-
-
 
     /** Paint the grey cover*/
 
@@ -145,35 +147,33 @@ class BatteryPainter extends CustomPainter {
       ..color = const Color(0xffb8b9b9)
       ..style = PaintingStyle.fill;
 
-    path2.moveTo(topLeft.dx+capdisp, topLeft.dy );
+    path2.moveTo(topLeft.dx + capdisp, topLeft.dy);
     path2.cubicTo(
-        leftBezierX+capdisp,  deltaH-capdisp,
-        rightBezierX-capdisp, deltaH-capdisp,
-        topRight.dx-capdisp, topRight.dy //Left curve point
-    );
+        leftBezierX + capdisp,
+        deltaH - capdisp,
+        rightBezierX - capdisp,
+        deltaH - capdisp,
+        topRight.dx - capdisp,
+        topRight.dy //Left curve point
+        );
 
     // From Right top to left top with a negative curve
     path2.cubicTo(
-        rightBezierX-capdisp, -deltaH+capdisp,
-        leftBezierX+capdisp,  -deltaH+capdisp,
-        topLeft.dx+capdisp, topLeft.dy //Left curve point
-    );
+        rightBezierX - capdisp,
+        -deltaH + capdisp,
+        leftBezierX + capdisp,
+        -deltaH + capdisp,
+        topLeft.dx + capdisp,
+        topLeft.dy //Left curve point
+        );
 
     path2.close(); // line to 0,0
     canvas.drawPath(path2, paint2);
 
-
     paintTip(canvas: canvas);
-
-
-
-
-
-
   }
 
-
-  void paintTip({required Canvas canvas}){
+  void paintTip({required Canvas canvas}) {
     /** pain the tip */
 
     final double startX = width * .35;
@@ -194,33 +194,28 @@ class BatteryPainter extends CustomPainter {
     var bottomRight = Offset(endX, 0);
     var topRight = Offset(endX, startY);
 
-
     // Start from the top-left corner
-    path.moveTo(bottomLeft.dx, bottomLeft.dy );
-    path.cubicTo(
-        bottomLeft.dx, tipHeight ,
-        bottomRight.dx, tipHeight ,
+    path.moveTo(bottomLeft.dx, bottomLeft.dy);
+    path.cubicTo(bottomLeft.dx, tipHeight, bottomRight.dx, tipHeight,
         bottomRight.dx, bottomRight.dy //Left curve point
-    );
-    path.lineTo(topRight.dx, topRight.dy-tipHeight);
+        );
+    path.lineTo(topRight.dx, topRight.dy - tipHeight);
     /*Top Curve*/
     path.cubicTo(
-      bottomRight.dx, 0,
-      bottomLeft.dx, 0,
-
-      topLeft.dx,topLeft.dy-tipHeight,
+      bottomRight.dx,
+      0,
+      bottomLeft.dx,
+      0,
+      topLeft.dx,
+      topLeft.dy - tipHeight,
     );
     path.close();
     canvas.drawPath(path, paint);
 
     /** Paint tips oval top*/
-
-
-
-
   }
 
-  void paintEmptyCapacity({required Canvas canvas}){
+  void paintEmptyCapacity({required Canvas canvas}) {
     const double startX = 0;
     const double startY = 0;
     final paint = Paint()
@@ -231,9 +226,7 @@ class BatteryPainter extends CustomPainter {
         Color(0xff9da3b0),
         Color(0xff383f4f),
         Color(0xff2d3447),
-
         Color(0xff2a3246),
-
         Color(0xff2d3447),
         Color(0xff383f4f),
         Color(0xff9da3b0),
@@ -251,36 +244,38 @@ class BatteryPainter extends CustomPainter {
     final path = Path();
 
     // Start from the top-left corner
-    path.moveTo(bottomLeft.dx, bottomLeft.dy );
-    path.cubicTo(
-        leftBezierX, emptyHeight - deltaH,
-        rightBezierX, emptyHeight - deltaH,
-        bottomRight.dx, bottomRight.dy //Left curve point
-    );
+    path.moveTo(bottomLeft.dx, bottomLeft.dy);
+    path.cubicTo(leftBezierX, emptyHeight - deltaH, rightBezierX,
+        emptyHeight - deltaH, bottomRight.dx, bottomRight.dy //Left curve point
+        );
     path.lineTo(topRight.dx, topRight.dy);
     /*Top Curve*/
     path.cubicTo(
-      rightBezierX, deltaH,
-      leftBezierX, deltaH,
-      topLeft.dx,topLeft.dy,
+      rightBezierX,
+      deltaH,
+      leftBezierX,
+      deltaH,
+      topLeft.dx,
+      topLeft.dy,
     );
     path.close();
     canvas.drawPath(path, paint);
   }
 
-  void paintCapacity({required Canvas canvas}){
+  void paintCapacity({required Canvas canvas}) {
     const double startX = 0;
     const double startY = 0;
 
     final paint = Paint()
       ..color = Colors.green
       ..style = PaintingStyle.fill
-    ..shader = const LinearGradient(colors: [
-      Color(0xff10db90),
-      Color(0xff7af5c9),
-      Color(0xff7af5c9),
-      Color(0xff10db90),
-    ]).createShader(Rect.fromPoints(const Offset(0,0), const Offset(100,100)));
+      ..shader = const LinearGradient(colors: [
+        Color(0xff10db90),
+        Color(0xff7af5c9),
+        Color(0xff7af5c9),
+        Color(0xff10db90),
+      ]).createShader(
+          Rect.fromPoints(const Offset(0, 0), const Offset(100, 100)));
 
     final capacityHeight = batteryHeight - batteryHeight * capacity / 100;
 
@@ -293,22 +288,22 @@ class BatteryPainter extends CustomPainter {
     final path = Path();
 
     // Start from the top-left corner
-    path.moveTo(bottomLeft.dx, bottomLeft.dy );
-    path.cubicTo(
-        leftBezierX, height,
-        rightBezierX, height,
-        bottomRight.dx, bottomRight.dy //Left curve point
-    );
+    path.moveTo(bottomLeft.dx, bottomLeft.dy);
+    path.cubicTo(leftBezierX, height, rightBezierX, height, bottomRight.dx,
+        bottomRight.dy //Left curve point
+        );
     path.lineTo(topRight.dx, topRight.dy);
     /*Top Curve*/
     path.cubicTo(
-      rightBezierX, capacityHeight + deltaH,
-      leftBezierX, capacityHeight + deltaH,
-      topLeft.dx,topLeft.dy,
+      rightBezierX,
+      capacityHeight + deltaH,
+      leftBezierX,
+      capacityHeight + deltaH,
+      topLeft.dx,
+      topLeft.dy,
     );
     path.close();
     canvas.drawPath(path, paint);
-
 
     // inside oval
 
@@ -323,7 +318,6 @@ class BatteryPainter extends CustomPainter {
           colors: [
             Color(0xff5cf3bc),
             Color(0xfff4fefb),
-
           ]).createShader(Rect.fromPoints(
         Offset(topLeft.dx - deltaH, topLeft.dy - deltaH),
         Offset(topRight.dx + deltaH, topLeft.dy + deltaH),
@@ -332,21 +326,23 @@ class BatteryPainter extends CustomPainter {
     path2.moveTo(topRight.dx, topRight.dy);
     /*Top Curve*/
     path2.cubicTo(
-      rightBezierX, capacityHeight + deltaH,
-      leftBezierX, capacityHeight + deltaH,
-      topLeft.dx,topLeft.dy,
+      rightBezierX,
+      capacityHeight + deltaH,
+      leftBezierX,
+      capacityHeight + deltaH,
+      topLeft.dx,
+      topLeft.dy,
     );
 
     path2.cubicTo(
-      leftBezierX, capacityHeight - deltaH,
-      rightBezierX, capacityHeight - deltaH,
-
-      topRight.dx,topRight.dy,
+      leftBezierX,
+      capacityHeight - deltaH,
+      rightBezierX,
+      capacityHeight - deltaH,
+      topRight.dx,
+      topRight.dy,
     );
     path2.close();
     canvas.drawPath(path2, paint2);
-
-
-
   }
 }
