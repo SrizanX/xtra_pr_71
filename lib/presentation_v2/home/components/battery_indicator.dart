@@ -2,19 +2,27 @@ import 'package:flutter/material.dart';
 
 class BatteryIndicator extends StatelessWidget {
   final double capacity;
+  final double width;
+  final double height;
 
-  const BatteryIndicator({super.key, required this.capacity});
+  const BatteryIndicator({
+    super.key,
+    required this.capacity,
+    this.width = 100,
+    this.height = 150,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Stack(
           alignment: Alignment.center,
           children: [
             Battery(
-              width: 100,
-              height: 150,
+              width: width,
+              height: height,
               color: Colors.grey,
               capacity: capacity,
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xtra_pr_71/presentation/home/dashboard/signal_strength_indicator_widget.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_state.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/data_connectivity_cubit.dart';
@@ -34,14 +35,19 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(
                       height: 20,
                     ),
-                    Expanded(
-                      child: Center(
-                        child: BatteryIndicator(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        BatteryIndicator(
                             capacity: double.parse((state)
                                 .deviceInfo
                                 .batteryPercent
                                 .replaceAll('%', ''))),
-                      ),
+                        SignalStrengthIndicatorBar(
+                            signalStrength:
+                                "${state.deviceInfo.strengthLevel}"),
+                      ],
                     ),
                     buildToggleButtons(),
                     const SizedBox(
@@ -124,7 +130,6 @@ class HomeScreen extends StatelessWidget {
             label: "Limit",
             isOn: state.isUsageLimitEnabled,
             onTap: () {
-              print("limit");
               context.read<DataLimitCubit>().toggleLimit();
             },
           );

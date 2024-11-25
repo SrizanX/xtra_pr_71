@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 
 class PowerButton extends StatelessWidget {
-  const PowerButton({super.key});
+  final void Function()? onPressed;
+
+  const PowerButton({
+    super.key,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () {},
+      onPressed: onPressed,
       icon: SizedBox(
         height: 80,
         width: 80,

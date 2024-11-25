@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 
 class SignalStrengthIndicatorBar extends StatelessWidget {
   final String signalStrength;
+  final double width;
+  final double height;
 
   const SignalStrengthIndicatorBar({
     super.key,
     required this.signalStrength,
+    this.width = 100,
+    this.height = 150,
   });
 
   @override
@@ -26,7 +30,7 @@ class SignalStrengthIndicatorBar extends StatelessWidget {
           children: List.generate(5, (index) {
             return Container(
               width: 12, // Narrow bars for a more old-school look
-              height: (index + 1) * 38.0, // Gradually increasing height
+              height: (index + 1) * 30.0, // Gradually increasing height
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
                 color: index < level
@@ -41,10 +45,10 @@ class SignalStrengthIndicatorBar extends StatelessWidget {
         // Display signal strength level as text
         Text(
           "$level / 5",
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Theme.of(context)
+              .textTheme
+              .headlineLarge
+              ?.copyWith(color: Colors.white),
         ),
       ],
     );
@@ -53,9 +57,9 @@ class SignalStrengthIndicatorBar extends StatelessWidget {
   Color _getColorForSignalLevel(int level) {
     // Determine color based on signal strength
     if (level == 5) {
-      return Colors.green; // Excellent signal
+      return const Color(0xff10db90);
     } else if (level == 4) {
-      return Colors.lightGreen;
+      return const Color(0xff57f3ba);
     } else if (level == 3) {
       return Colors.yellow;
     } else if (level == 2) {
