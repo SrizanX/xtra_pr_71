@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xtra_pr_71/presentation/home/dashboard/signal_strength_indicator_widget.dart';
+import 'package:xtra_pr_71/presentation_v2/components/app_dialog_widget.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_state.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/data_connectivity_cubit.dart';
@@ -12,21 +14,22 @@ import 'package:xtra_pr_71/presentation_v2/home/components/power_button.dart';
 import 'package:xtra_pr_71/presentation_v2/home/components/toggle_button.dart';
 import 'package:xtra_pr_71/presentation_v2/settings/settings_route.dart';
 
+import '../components/app_error_widget.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: const Color.fromRGBO(41, 43, 68, 100),
-      child: SafeArea(
+    return Scaffold(
+      body: SafeArea(
         child: BlocBuilder<DashboardCubit, DashboardState>(
           builder: (context, state) {
             switch (state) {
               case DashboardLoading():
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               case DashboardFailed():
-                return Text((state).errorMessage);
+                return ErrorView(errorMessage: (state).errorMessage);
               case DashboardSuccessful():
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -35,25 +38,31 @@ class HomeScreen extends StatelessWidget {
                     const SizedBox(
                       height: 20,
                     ),
-                    Row(
+                    Text(state.deviceInfo.networkType),
+                    Expanded(
+                        child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         BatteryIndicator(
-                            capacity: double.parse((state)
-                                .deviceInfo
-                                .batteryPercent
-                                .replaceAll('%', ''))),
+                          capacity: double.parse((state)
+                              .deviceInfo
+                              .batteryPercent
+                              .replaceAll('%', '')),
+                          height: 120,
+                          width: 80,
+                        ),
                         SignalStrengthIndicatorBar(
-                            signalStrength:
-                                "${state.deviceInfo.strengthLevel}"),
+                          signalStrength: "${state.deviceInfo.strengthLevel}",
+                          height: 120,
+                        ),
                       ],
-                    ),
+                    )),
                     buildToggleButtons(),
                     const SizedBox(
                       height: 32,
                     ),
-                    buildPowerButton()
+                    buildPowerButton(context)
                   ],
                 );
             }
@@ -67,7 +76,9 @@ class HomeScreen extends StatelessWidget {
     return Row(
       children: [
         IconButton(
-            onPressed: () {},
+            onPressed: () {
+              SystemNavigator.pop();
+            },
             icon: const Icon(
               Icons.close,
               color: Colors.white,
@@ -138,10 +149,25 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPowerButton() {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(0, 0, 0, 40),
-      child: PowerButton(),
+  Widget buildPowerButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
+      child: PowerButton(
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AppDialogWidget(
+                  title: "Shutdown",
+                  message: "Are you sure?",
+                  onPositiveButtonClick: () {
+                    Navigator.pop(context);
+                    //context.read<>();
+                  },
+                );
+              });
+        },
+      ),
     );
   }
 }
