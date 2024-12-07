@@ -3,6 +3,7 @@ import 'package:xtra_pr_71/presentation_v2/home/home_route.dart';
 
 import '../login/login_route.dart';
 import '../settings/settings_route.dart';
+import '../splash/splash_route.dart';
 
 class RouteGenerator {
   static Route onGenerateRoute(RouteSettings routeSettings) {
@@ -12,6 +13,9 @@ class RouteGenerator {
 
       case LoginRoute.route:
         return LoginRoute.generate();
+
+      case SplashRoute.route:
+        return SplashRoute.generate();
 
       case SettingsRoute.route:
         return SettingsRoute.generate();

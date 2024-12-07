@@ -9,6 +9,7 @@ import 'package:xtra_pr_71/presentation_v2/home/bloc/data_connectivity_cubit.dar
 import 'package:xtra_pr_71/presentation_v2/home/bloc/data_connectivity_state.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/data_limit_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/data_limit_state.dart';
+import 'package:xtra_pr_71/presentation_v2/home/bloc/home_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/home/components/battery_indicator.dart';
 import 'package:xtra_pr_71/presentation_v2/home/components/power_button.dart';
 import 'package:xtra_pr_71/presentation_v2/home/components/toggle_button.dart';
@@ -77,7 +78,18 @@ class HomeScreen extends StatelessWidget {
       children: [
         IconButton(
             onPressed: () {
-              SystemNavigator.pop();
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AppDialogWidget(
+                    title: "Close app",
+                    message: "Are you sure?",
+                    onPositiveButtonClick: () {
+                      SystemNavigator.pop();
+                    },
+                  );
+                },
+              );
             },
             icon: const Icon(
               Icons.close,
@@ -150,22 +162,24 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget buildPowerButton(BuildContext context) {
+    final homeCubit = context.read<HomeCubit>();
     return Padding(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 40),
       child: PowerButton(
         onPressed: () {
           showDialog(
-              context: context,
-              builder: (context) {
-                return AppDialogWidget(
-                  title: "Shutdown",
-                  message: "Are you sure?",
-                  onPositiveButtonClick: () {
-                    Navigator.pop(context);
-                    //context.read<>();
-                  },
-                );
-              });
+            context: context,
+            builder: (context) {
+              return AppDialogWidget(
+                title: "Shutdown",
+                message: "Are you sure?",
+                onPositiveButtonClick: () {
+                  homeCubit.powerOff();
+                  Navigator.pop(context);
+                },
+              );
+            },
+          );
         },
       ),
     );

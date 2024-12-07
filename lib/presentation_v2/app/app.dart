@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:xtra_pr_71/presentation_v2/app/route_generator.dart';
-import 'package:xtra_pr_71/presentation_v2/login/login_route.dart';
+import 'package:xtra_pr_71/presentation_v2/splash/splash_route.dart';
 
 import '../../design/color_seleection.dart';
 
@@ -18,15 +18,16 @@ class App extends StatelessWidget {
         onSecondary: Colors.black12,
         error: Colors.red,
         onError: Colors.black12,
-        surface: ColorSelection.darkBlue.color,
+        surface: ColorSelection.darkBlueTransparent.color,
         onSurface: ColorSelection.white.color,
+        secondaryContainer: ColorSelection.darkBlue.color
       ),
     );
     ColorSelection colorSelected = ColorSelection.deepOrange;
     return MaterialApp(
       title: 'XTRA PR71',
       theme: theme,
-      initialRoute: LoginRoute.route,
+      initialRoute: SplashRoute.route,
       onGenerateRoute: RouteGenerator.onGenerateRoute,
       debugShowCheckedModeBanner: false,
     );
