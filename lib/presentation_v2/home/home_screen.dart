@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xtra_pr_71/presentation/home/dashboard/signal_strength_indicator_widget.dart';
-import 'package:xtra_pr_71/presentation_v2/components/app_dialog_widget.dart';
+import 'package:xtra_pr_71/presentation_v2/components/app_alert_dialog_widget.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_state.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/data_connectivity_cubit.dart';
@@ -81,7 +81,7 @@ class HomeScreen extends StatelessWidget {
               showDialog(
                 context: context,
                 builder: (context) {
-                  return AppDialogWidget(
+                  return AppAlertDialog(
                     title: "Close app",
                     message: "Are you sure?",
                     onPositiveButtonClick: () {
@@ -170,7 +170,7 @@ class HomeScreen extends StatelessWidget {
           showDialog(
             context: context,
             builder: (context) {
-              return AppDialogWidget(
+              return AppAlertDialog(
                 title: "Shutdown",
                 message: "Are you sure?",
                 onPositiveButtonClick: () {

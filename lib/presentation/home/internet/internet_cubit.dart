@@ -3,7 +3,7 @@ import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../data/network/api/internet_state_api_service.dart';
 import '../../../domain/entity/internet/network_info.dart';
-import 'network_mode.dart';
+import '../../../domain/entity/network_mode.dart';
 
 class InternetState {
   final bool isLoading;

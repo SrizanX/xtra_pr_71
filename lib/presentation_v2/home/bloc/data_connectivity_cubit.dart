@@ -4,7 +4,7 @@ import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../data/network/api/internet_state_api_service.dart';
 import '../../../domain/entity/internet/network_info.dart';
-import '../../../presentation/home/internet/network_mode.dart';
+import '../../../domain/entity/network_mode.dart';
 import 'data_connectivity_state.dart';
 
 class DataConnectivityCubit extends Cubit<DataConnectivityState> {

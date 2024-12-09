@@ -29,7 +29,7 @@ class NetworkClient {
       if (response.statusCode >= 200 && response.statusCode < 300) {
         return Successful(data: response.body);
       } else {
-        return Failed(message: 'Error: ${response.statusCode}');
+        return Failed(message: _getHttpStatusMessage(response.statusCode));
       }
     } on SocketException catch (e) {
       return Failed(message: "Connection failed", exception: e);
@@ -37,6 +37,19 @@ class NetworkClient {
       return Failed(message: "Connection timeout", exception: e);
     } on Exception catch (e) {
       return Failed(message: "Something went wrong", exception: e);
+    }
+  }
+
+  String _getHttpStatusMessage(int statusCode) {
+    switch (statusCode) {
+      case 401:
+        return "401: May be you are connected to a different router";
+
+      case 403:
+        return "403: May be you are connected to a different router";
+
+      default:
+        return "Unknown error occurred!";
     }
   }
 

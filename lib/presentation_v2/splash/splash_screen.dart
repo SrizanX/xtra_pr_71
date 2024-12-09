@@ -17,9 +17,9 @@ class SplashScreen extends StatelessWidget {
           builder: (context, state) => const CircularProgressIndicator(),
           listener: (context, state) {
             if (state is LoginSuccessfulFromSplash) {
-              Navigator.popAndPushNamed(context, HomeRoute.route);
+              Navigator.pushReplacementNamed(context, HomeRoute.route);
             } else if (state is LoginFailedFromSplash) {
-              Navigator.popAndPushNamed(context, LoginRoute.route);
+              Navigator.pushReplacementNamed(context, LoginRoute.route);
             }
           },
         ),

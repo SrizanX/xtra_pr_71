@@ -56,7 +56,6 @@ class LoginScreen extends StatelessWidget {
                       return const Text("Login");
                     },
                     listener: (context, state) {
-                      print("login statee: ${state.loginApiState.runtimeType}");
                       if (state.loginApiState is LoginSuccessful) {
                         Navigator.popAndPushNamed(context, HomeRoute.route);
                       }

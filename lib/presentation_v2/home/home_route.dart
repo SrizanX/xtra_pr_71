@@ -7,7 +7,7 @@ import 'package:xtra_pr_71/presentation_v2/home/bloc/home_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/home/home_screen.dart';
 
 class HomeRoute {
-  static const String route = "/";
+  static const String route = "/home";
 
   static Route generate() {
     return MaterialPageRoute(

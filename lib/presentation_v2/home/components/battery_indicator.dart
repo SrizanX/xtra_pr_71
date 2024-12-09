@@ -84,7 +84,7 @@ class BatteryPainter extends CustomPainter {
   BatteryPainter({
     required this.capacity,
     required this.color,
-  }) {}
+  });
 
   @override
   void paint(Canvas canvas, Size size) {

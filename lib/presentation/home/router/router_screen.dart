@@ -8,25 +8,25 @@ class RouterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Router"),
+        title: const Text("Router"),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            PasswordField(),
-            SizedBox(
+            const PasswordField(),
+            const SizedBox(
               height: 16,
             ),
-            PasswordField(),
-            SizedBox(
+            const PasswordField(),
+            const SizedBox(
               height: 16,
             ),
-            PasswordField(),
-            SizedBox(
+            const PasswordField(),
+            const SizedBox(
               height: 16,
             ),
-            FilledButton(onPressed: (){}, child: Text("Change")),
+            FilledButton(onPressed: (){}, child: const Text("Change")),
             buildButton(context: context)
           ],
         ),

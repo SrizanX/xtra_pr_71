@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../internet_cubit.dart';
-import '../network_mode.dart';
+import '../../../../domain/entity/network_mode.dart';
 
 class ConnectionCard extends StatelessWidget {
   const ConnectionCard({super.key});

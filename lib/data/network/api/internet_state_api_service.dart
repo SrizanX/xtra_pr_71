@@ -6,7 +6,7 @@ import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../domain/entity/internet/network_info.dart';
 import '../../../domain/type.dart';
-import '../../../presentation/home/internet/network_mode.dart';
+import '../../../domain/entity/network_mode.dart';
 import '../network_client.dart';
 
 class InternetStateApiService {

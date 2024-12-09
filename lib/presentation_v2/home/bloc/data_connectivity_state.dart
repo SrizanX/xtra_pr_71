@@ -1,4 +1,4 @@
-import '../../../presentation/home/internet/network_mode.dart';
+import '../../../domain/entity/network_mode.dart';
 
 class DataConnectivityState {
   final bool isLoading;
