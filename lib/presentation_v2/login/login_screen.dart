@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:xtra_pr_71/presentation_v2/login/bloc/login_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/login/bloc/login_state.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../home/home_route.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -22,9 +22,9 @@ class LoginScreen extends StatelessWidget {
               const Icon(Icons.router, size: 120),
               const SizedBox(height: 32),
               TextFormField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  label: Text("Admin username"),
+                decoration:  InputDecoration(
+                  border: const OutlineInputBorder(),
+                  label: Text(AppLocalizations.of(context)!.adminUsername),
                 ),
                 initialValue: loginCubit.state.username,
                 onChanged: (value) {
@@ -33,9 +33,10 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    label: Text("Admin password")),
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  label: Text(AppLocalizations.of(context)!.adminPassword),
+                ),
                 initialValue: loginCubit.state.password,
                 onChanged: (value) {
                   loginCubit.onPasswordChange(value);
@@ -53,7 +54,7 @@ class LoginScreen extends StatelessWidget {
                       if (state.loginApiState is LoginInProgress) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      return const Text("Login");
+                      return Text(AppLocalizations.of(context)!.login);
                     },
                     listener: (context, state) {
                       if (state.loginApiState is LoginSuccessful) {
@@ -80,7 +81,7 @@ class LoginScreen extends StatelessWidget {
                           });
                     },
                   ),
-                  const Text("Stay logged in")
+                  Text(AppLocalizations.of(context)!.stayLoggedIn)
                 ],
               )
             ],
