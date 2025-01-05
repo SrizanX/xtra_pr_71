@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:xtra_pr_71/presentation_v2/home/home_route.dart';
 
+import '../contacts/contacts_route.dart';
 import '../login/login_route.dart';
 import '../settings/settings_route.dart';
 import '../sms/sms_route.dart';
@@ -20,6 +21,9 @@ class RouteGenerator {
 
       case SettingsRoute.route:
         return SettingsRoute.generate();
+
+      case ContactsRoute.route:
+        return ContactsRoute.generate();
 
       case SmsRoute.route:
         return SmsRoute.generate();

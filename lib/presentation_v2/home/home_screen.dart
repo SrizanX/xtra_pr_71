@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xtra_pr_71/presentation/home/dashboard/signal_strength_indicator_widget.dart';
 import 'package:xtra_pr_71/presentation_v2/components/app_alert_dialog_widget.dart';
+import 'package:xtra_pr_71/presentation_v2/contacts/contacts_route.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/dashboard_state.dart';
 import 'package:xtra_pr_71/presentation_v2/home/bloc/data_connectivity_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:xtra_pr_71/presentation_v2/home/components/battery_indicator.dar
 import 'package:xtra_pr_71/presentation_v2/home/components/power_button.dart';
 import 'package:xtra_pr_71/presentation_v2/home/components/toggle_button.dart';
 import 'package:xtra_pr_71/presentation_v2/settings/settings_route.dart';
+import 'package:xtra_pr_71/presentation_v2/sms/sms_route.dart';
 
 import '../components/app_error_widget.dart';
 
@@ -60,10 +62,31 @@ class HomeScreen extends StatelessWidget {
                       ],
                     )),
                     buildToggleButtons(),
+
                     const SizedBox(
                       height: 32,
                     ),
-                    buildPowerButton(context)
+                    Row(
+                      children: [
+                        Column(
+                          children: [
+                            IconButton(
+                                onPressed: () {}, icon: Icon(Icons.dialpad)),
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, ContactsRoute.route);
+                                }, icon: Icon(Icons.contact_phone_outlined)),
+                            IconButton(
+                                onPressed: () {
+                                  Navigator.pushNamed(context, SmsRoute.route);
+                                }, icon: Icon(Icons.sms_outlined)),
+                          ],
+                        ),
+
+                        Expanded(child:  buildPowerButton(context) )
+                       ,
+                      ],
+                    )
                   ],
                 );
             }

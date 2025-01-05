@@ -26,7 +26,9 @@ class SplashCubit extends Cubit<SplashState> {
           break;
       }
     } else {
-      emit(const SplashState.loginFailed(message: "Not remembered"));
+      Future.delayed(Duration.zero, () {
+        emit(const SplashState.loginFailed(message: "Not remembered"));
+      });
     }
   }
 }

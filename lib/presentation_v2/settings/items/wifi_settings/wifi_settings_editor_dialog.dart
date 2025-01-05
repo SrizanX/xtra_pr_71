@@ -10,9 +10,10 @@ class WifiSettingsEditorDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      builder: (context, scrollController) {
-        return Column(
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 44),
@@ -70,8 +71,8 @@ class WifiSettingsEditorDialog extends StatelessWidget {
                 },
                 child: const Text("Apply"))
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 }

@@ -2,5 +2,7 @@
   "adminUsername": "এডমিন ইউজারনেম",
   "adminPassword": "এডমিন পাসওয়ার্ড",
   "stayLoggedIn": "লগইন থাকুন",
-  "login": "লগইন"
+  "login": "লগইন",
+  "messages": "বার্তা",
+  "contacts": "Contacts"
 }

@@ -34,7 +34,7 @@ class WifiSettings extends StatelessWidget {
   }
 
   void _showWifiSettingsEditorDialog(BuildContext context) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
       builder: (dialogContext) {
         return BlocProvider.value(
