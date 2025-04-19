@@ -11,7 +11,9 @@ class WirelessInfoCubit extends Cubit<WirelessInfoState> {
           wifiName: "",
           password: "",
           maxDevices: 1,
-        ));
+        )){
+    fetchWirelessSettings();
+  }
 
   void onUpdateWifiName({required String wifiName}) {
     emit(state.copyWith(wifiName: wifiName));

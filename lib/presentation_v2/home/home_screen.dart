@@ -70,12 +70,12 @@ class HomeScreen extends StatelessWidget {
                       children: [
                         Column(
                           children: [
-                            IconButton(
-                                onPressed: () {}, icon: Icon(Icons.dialpad)),
-                            IconButton(
-                                onPressed: () {
-                                  Navigator.pushNamed(context, ContactsRoute.route);
-                                }, icon: Icon(Icons.contact_phone_outlined)),
+                            // IconButton(
+                            //     onPressed: () {}, icon: Icon(Icons.dialpad)),
+                            // IconButton(
+                            //     onPressed: () {
+                            //       Navigator.pushNamed(context, ContactsRoute.route);
+                            //     }, icon: Icon(Icons.contact_phone_outlined)),
                             IconButton(
                                 onPressed: () {
                                   Navigator.pushNamed(context, SmsRoute.route);
