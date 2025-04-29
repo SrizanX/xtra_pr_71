@@ -1,10 +1,9 @@
 name: xtra_pr_71
 description: "A controller for XTRA PR71 pocket router."
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-
-version: 1.0.0+1
+version: 0.1.0-alpha.1+1
 
 environment:
   sdk: ^3.5.4
@@ -12,7 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -35,7 +33,6 @@ dev_dependencies:
   build_runner: ^2.4.13
   json_serializable: ^6.8.0
   freezed: ^2.5.7
-
 
 flutter:
   uses-material-design: true

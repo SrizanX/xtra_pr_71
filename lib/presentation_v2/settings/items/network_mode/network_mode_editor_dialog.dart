@@ -58,6 +58,7 @@ class _NetworkModeEditorDialogState extends State<NetworkModeEditorDialog> {
         Text("Network mode", style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(width: 16),
         DropdownButton<NetworkMode>(
+          dropdownColor: Theme.of(context).colorScheme.secondaryContainer,
           value: networkMode,
           items: NetworkMode.values
               .map(
