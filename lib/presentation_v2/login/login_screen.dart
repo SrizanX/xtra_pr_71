@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:go_router/go_router.dart';
 import 'package:xtra_pr_71/presentation_v2/login/bloc/login_cubit.dart';
 import 'package:xtra_pr_71/presentation_v2/login/bloc/login_state.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -58,7 +59,7 @@ class LoginScreen extends StatelessWidget {
                     },
                     listener: (context, state) {
                       if (state.loginApiState is LoginSuccessful) {
-                        Navigator.popAndPushNamed(context, HomeRoute.route);
+                        context.go(HomeRoute.route);
                       }
 
                       if (state.loginApiState is LoginFailed) {

@@ -14,4 +14,11 @@ class SplashRoute {
       ),
     );
   }
+
+  static generateGoRoute() {
+    return BlocProvider(
+      create: (context) => SplashCubit(),
+      child: const SplashScreen(),
+    );
+  }
 }
