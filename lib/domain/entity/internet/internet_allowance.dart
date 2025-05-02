@@ -20,3 +20,13 @@ class InternetAllowanceEntity {
         totalUsed: json['totalUsed'] ?? cUnknownStr,
       );
 }
+
+enum AllowanceUnit {
+  mb(label: "MB", multiplier: 1024 * 1024),
+  gb(label: "GB", multiplier: 1024 * 1024 * 1024);
+
+  final String label;
+  final num multiplier;
+
+  const AllowanceUnit({required this.label, required this.multiplier});
+}

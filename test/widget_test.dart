@@ -7,7 +7,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:xtra_pr_71/presentation/app/app.dart';
 
 void main() {

@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:xtra_pr_71/presentation/app/app.dart';
 import 'data/shared_preferences/prefs_repository.dart';
-//import 'presentation_v2/app/app.dart';
-import 'presentation_v2/app/app_go.dart';
-//import 'presentation/app/app.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

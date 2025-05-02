@@ -5,7 +5,6 @@ import 'package:xtra_pr_71/data/network/mapper/state_response_mapper.dart';
 import 'package:xtra_pr_71/data/network/network_client.dart';
 import 'package:xtra_pr_71/domain/entity/internet/internet_allowance.dart';
 import 'package:xtra_pr_71/domain/result.dart';
-import 'package:xtra_pr_71/presentation/home/internet/allowance/allowance_card.dart';
 
 import '../mapper/base/result_mapper.dart';
 import '../model/state_response.dart';
