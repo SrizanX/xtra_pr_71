@@ -26,6 +26,7 @@ dependencies:
     sdk: flutter
   intl: any
   go_router: ^17.1.0
+  device_preview: ^1.3.1
 
 dev_dependencies:
   flutter_test:
