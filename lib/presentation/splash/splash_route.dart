@@ -15,7 +15,7 @@ class SplashRoute {
     );
   }
 
-  static generateGoRoute() {
+  static Widget generateGoRoute() {
     return BlocProvider(
       create: (context) => SplashCubit(),
       child: const SplashScreen(),

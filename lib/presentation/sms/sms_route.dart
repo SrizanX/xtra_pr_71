@@ -16,7 +16,7 @@ class SmsRoute {
     );
   }
 
-  static generateGoRoute() {
+  static GoRoute generateGoRoute() {
     return GoRoute(
       path: route,
       builder: (_, state) => BlocProvider(

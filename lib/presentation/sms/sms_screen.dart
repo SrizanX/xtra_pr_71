@@ -45,14 +45,7 @@ class SmsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSmsList(BuildContext context, List<Sms> smsList) {
-    return ListView.builder(
-      itemCount: smsList.length,
-      itemBuilder: (context, index) {
-        return _buildSmsItem(context, smsList[index]);
-      },
-    );
-  }
+
 
   Widget _buildPaginatedSmsList(BuildContext context, SmsApiEntity smsEntity) {
     if (smsEntity.data.isEmpty) {
@@ -253,7 +246,7 @@ class SmsScreen extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isActive
-              ? ColorSelection.blue_500.color.withOpacity(0.3)
+              ? ColorSelection.blue_500.color.withValues(alpha: 0.3)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
@@ -267,23 +260,9 @@ class SmsScreen extends StatelessWidget {
           style: TextStyle(
             color: isActive
                 ? ColorSelection.white.color
-                : ColorSelection.white.color.withOpacity(0.6),
+                : ColorSelection.white.color.withValues(alpha: 0.6),
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _ellipsis() {
-    return Container(
-      width: 32,
-      height: 32,
-      alignment: Alignment.center,
-      child: Text(
-        '...',
-        style: TextStyle(
-          color: ColorSelection.white.color.withOpacity(0.6),
         ),
       ),
     );

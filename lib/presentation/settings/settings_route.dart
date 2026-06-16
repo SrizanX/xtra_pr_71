@@ -21,7 +21,7 @@ class SettingsRoute {
     );
   }
 
-  static generateGoRoute() {
+  static GoRoute generateGoRoute() {
     return GoRoute(
       path: route,
       builder: (context, state) => MultiBlocProvider(

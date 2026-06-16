@@ -14,8 +14,6 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final loginCubit = context.read<LoginCubit>();
     // Get bottom inset (keyboard height)
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
     return Scaffold(
       // Keep this true
       resizeToAvoidBottomInset: true,

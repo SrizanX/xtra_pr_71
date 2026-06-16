@@ -15,7 +15,7 @@ class PrefsRepository {
 
   bool get isRememberMeEnabled => _prefs?.getBool("rememberMe") ?? false;
 
-  set isRememberMeEnabled(value) {
+  set isRememberMeEnabled(bool value) {
     _prefs?.setBool("rememberMe", value);
   }
 

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xtra_pr_71/domain/result.dart';
 import '../../../data/network/api/router_control_api_service.dart';
@@ -10,9 +11,13 @@ class HomeCubit extends Cubit<HomeSate> {
     final result = await RouterControlApiService().powerOff();
     switch (result) {
       case Successful():
-        print(result.data);
+        if (kDebugMode) {
+          print(result.data);
+        }
       case Failed():
-        print(result.message);
+        if (kDebugMode) {
+          print(result.message);
+        }
     }
   }
 }
