@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import '../../design/design_system.dart';
 import '../../l10n/app_localizations.dart';
 import '../home/home_route.dart';
 import 'bloc/login_cubit.dart';
@@ -14,23 +15,24 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final loginCubit = context.read<LoginCubit>();
     // Get bottom inset (keyboard height)
+    final dimens = AppDimensions.of(context);
     return Scaffold(
       // Keep this true
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+        child: ResponsiveCenter(
+          maxWidth: 460,
+          padding: EdgeInsets.all(dimens.screenPadding),
           child: SingleChildScrollView(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start, // Change to start
               children: [
                 // Add a SizedBox with viewport height to push content down
                 SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-                const Icon(Icons.router, size: 120),
-                const SizedBox(height: 32),
+                Icon(Icons.router, size: dimens.heroIconSize),
+                const SizedBox(height: AppSpacing.xxl),
                 TextFormField(
                   decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
                     label: Text(AppLocalizations.of(context)!.adminUsername),
                   ),
                   initialValue: loginCubit.state.username,
@@ -38,10 +40,9 @@ class LoginScreen extends StatelessWidget {
                     loginCubit.onUsernameChange(value);
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 TextFormField(
                   decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
                     label: Text(AppLocalizations.of(context)!.adminPassword),
                   ),
                   initialValue: loginCubit.state.password,
@@ -49,7 +50,7 @@ class LoginScreen extends StatelessWidget {
                     loginCubit.onPasswordChange(value);
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.lg),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
@@ -60,7 +61,8 @@ class LoginScreen extends StatelessWidget {
                       builder: (context, state) {
                         if (state.loginApiState is LoginInProgress) {
                           return const Center(
-                              child: CircularProgressIndicator());
+                            child: CircularProgressIndicator(),
+                          );
                         }
                         return Text(AppLocalizations.of(context)!.login);
                       },
@@ -83,15 +85,16 @@ class LoginScreen extends StatelessWidget {
                     BlocBuilder<LoginCubit, LoginState>(
                       builder: (context, state) {
                         return Checkbox(
-                            value: state.isStaySignedInChecked,
-                            onChanged: (value) {
-                              loginCubit.onSaveCredentialCheckBoxChange(value!);
-                            });
+                          value: state.isStaySignedInChecked,
+                          onChanged: (value) {
+                            loginCubit.onSaveCredentialCheckBoxChange(value!);
+                          },
+                        );
                       },
                     ),
-                    Text(AppLocalizations.of(context)!.stayLoggedIn)
+                    Text(AppLocalizations.of(context)!.stayLoggedIn),
                   ],
-                )
+                ),
               ],
             ),
           ),

@@ -7,7 +7,11 @@ part 'sms_state.freezed.dart';
 sealed class SmsState with _$SmsState {
   const factory SmsState.initial() = Initial;
 
-  const factory SmsState.smsListSuccessful({required SmsApiEntity sms}) = SmsListSuccessful;
+  const factory SmsState.smsListSuccessful({
+    required SmsApiEntity sms,
+    required int loadedPage,
+    required int totalPage,
+  }) = SmsListSuccessful;
 
   const factory SmsState.smsListFailed() = SmsListFailed;
 }

@@ -4,10 +4,11 @@ import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../domain/entity/device_info.dart';
 import '../mapper/dashboard_api_mapper.dart';
+import 'api_config.dart';
 
 class DashboardApiService {
   Future<Result<DeviceInfo>> fetchDashboardData() async {
-    const url = "http://192.168.0.1/jsonp_dashboard?callback=";
+    const url = "${ApiConfig.baseUrl}/jsonp_dashboard?callback=";
     final result = await NetworkClient().get(Uri.parse(url));
     return ResultMapper().map(result: result, mapper: DashboardApiMapper());
   }

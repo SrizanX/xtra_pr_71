@@ -8,10 +8,11 @@ import 'package:xtra_pr_71/domain/result.dart';
 
 import '../mapper/base/result_mapper.dart';
 import '../model/state_response.dart';
+import 'api_config.dart';
 
 class InternetAllowanceApiService {
   Future<Result<InternetAllowanceEntity>> fetchDataUsage() async {
-    const url = "http://192.168.0.1/jsonp_datausagestatus?callback=";
+    const url = "${ApiConfig.baseUrl}/jsonp_datausagestatus?callback=";
     final result = await NetworkClient().get(Uri.parse(url));
     return ResultMapper().map(result: result, mapper: AllowanceApiMapper());
   }
@@ -25,7 +26,7 @@ class InternetAllowanceApiService {
       "settingData": allowance * allowanceUnit.multiplier,
     };
 
-    const url = "http://192.168.0.1/datausage";
+    const url = "${ApiConfig.baseUrl}/datausage";
     final result = await NetworkClient().get(Uri.parse(url)
         .replace(queryParameters: {'datausageparam': jsonEncode(param)}));
 

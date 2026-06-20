@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import '../data/bloc/statistics_cubit.dart';
 import 'bloc/dashboard_cubit.dart';
 import 'bloc/data_connectivity_cubit.dart';
 import 'bloc/data_limit_cubit.dart';
@@ -18,6 +19,7 @@ class HomeRoute {
           BlocProvider(create: (context) => DashboardCubit()),
           BlocProvider(create: (context) => DataConnectivityCubit()),
           BlocProvider(create: (context) => DataLimitCubit()),
+          BlocProvider(create: (context) => StatisticsCubit()),
         ],
         child: const HomeScreen(),
       ),
@@ -33,6 +35,7 @@ class HomeRoute {
           BlocProvider(create: (context) => DashboardCubit()),
           BlocProvider(create: (context) => DataConnectivityCubit()),
           BlocProvider(create: (context) => DataLimitCubit()),
+          BlocProvider(create: (context) => StatisticsCubit()),
         ],
         child: const HomeScreen(),
       ),

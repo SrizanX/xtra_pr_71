@@ -38,7 +38,8 @@ class DataLimitCubit extends Cubit<DataLimitState> {
             isLoading: false,
             isUsageLimitEnabled: allowanceData.data.dataLimit,
             allowance: size,
-            allowanceUnit: unit));
+            allowanceUnit: unit,
+            totalUsed: allowanceData.data.totalUsed));
       case Failed<InternetAllowanceEntity>():
         emit(state.copyWith(isLoading: false));
     }
@@ -55,8 +56,10 @@ class DataLimitCubit extends Cubit<DataLimitState> {
 
     switch (response) {
       case Successful():
-        emit(state.copyWith(
-            isLoading: false, isUsageLimitEnabled: !state.isUsageLimitEnabled));
+        // Reflect the change immediately, then re-sync the live status
+        // (totalUsed, canonical allowance) from the router.
+        emit(state.copyWith(isUsageLimitEnabled: !state.isUsageLimitEnabled));
+        fetchDataLimitState();
       case Failed():
         emit(state.copyWith(isLoading: false));
     }
@@ -73,7 +76,8 @@ class DataLimitCubit extends Cubit<DataLimitState> {
 
     switch (response) {
       case Successful():
-        emit(state.copyWith(isLoading: false));
+        // Re-fetch so the card/gauge show the router's actual status.
+        fetchDataLimitState();
       case Failed():
         emit(state.copyWith(isLoading: false));
     }

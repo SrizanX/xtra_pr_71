@@ -8,11 +8,12 @@ import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../domain/entity/wireless/wireless_info.dart';
 import '../network_client.dart';
+import 'api_config.dart';
 
 class WirelessSettingsApiService {
   Future<Result<WirelessInfo>> fetchWirelessSettings() async {
     const url =
-        "http://192.168.0.1/jsonp_uapxb_wlan_security_settings?callback=";
+        "${ApiConfig.baseUrl}/jsonp_uapxb_wlan_security_settings?callback=";
     final result = await NetworkClient().get(Uri.parse(url));
 
     return ResultMapper()
@@ -36,7 +37,7 @@ class WirelessSettingsApiService {
       "isClose": 1,
     };
 
-    const url = "http://192.168.0.1/changeWifi";
+    const url = "${ApiConfig.baseUrl}/changeWifi";
     final result = await NetworkClient().get(Uri.parse(url)
         .replace(queryParameters: {'wifiparam': jsonEncode(param)}));
     return ResultMapper().map(result: result, mapper: StateApiMapper());

@@ -14,12 +14,11 @@ enum ColorSelection {
   pink('Pink', Colors.pink),
   darkBlue('Dark Blue', Color.fromRGBO(41, 43, 68, 1.0)),
   darkBlueTransparent('Dark Blue', Color.fromRGBO(41, 43, 68, 100)),
-  blue_500('Blue 500', Color(0xff5492f7));
+  blue_500('Blue 500', Color(0xff5492f7)),
+  greenAccent('Green Accent', Color(0xff43e0a0)),
+  amber('Amber', Color(0xfff5b14c));
 
-  const ColorSelection(
-    this.label,
-    this.color,
-  );
+  const ColorSelection(this.label, this.color);
 
   final String label;
   final Color color;

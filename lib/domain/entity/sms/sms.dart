@@ -40,6 +40,11 @@ final class Sms {
   String singleCount;
   String smstype;
 
+  /// The router pages SMS globally; this records which page the message was
+  /// loaded from, which the delete endpoint needs as `curpage`. Set by the
+  /// cubit after each page fetch (the parsed payload doesn't carry it per-row).
+  int page = 0;
+
   Sms({
     required this.smsContent,
     required this.phoneNumber,
@@ -58,4 +63,16 @@ final class Sms {
         classid = json['classid'],
         singleCount = json['singleCount'],
         smstype = json['smstype'];
+}
+
+extension SmsDirection on Sms {
+  /// Whether this message was sent from the device (vs. received).
+  ///
+  /// The router encodes direction in [smstype]; observed values use "2" for
+  /// sent and "1" for received. This is a best-effort mapping — adjust here if
+  /// a device reports different codes.
+  bool get isSent => smstype.trim() == '2';
+
+  /// Parsed timestamp, or null when [smsDate] can't be parsed.
+  DateTime? get sentAt => DateTime.tryParse(smsDate);
 }

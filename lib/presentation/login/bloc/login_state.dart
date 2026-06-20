@@ -3,7 +3,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'login_state.freezed.dart';
 
 @freezed
-class LoginState with _$LoginState {
+abstract class LoginState with _$LoginState {
   const factory LoginState({
     @Default("admin") String username,
     @Default("admin") String password,
@@ -13,7 +13,7 @@ class LoginState with _$LoginState {
 }
 
 @freezed
-class LoginApiState with _$LoginApiState {
+abstract class LoginApiState with _$LoginApiState {
   const factory LoginApiState.initial() = Initial;
 
   const factory LoginApiState.loginInProgress() = LoginInProgress;

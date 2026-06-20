@@ -25,7 +25,7 @@ class SmsScreen extends StatelessWidget {
         builder: (context, state) {
           return state.when(
               initial: () => const CenteredProgressIndicator(),
-              smsListSuccessful: (data) => _buildScreen(context, data),
+              smsListSuccessful: (data, _, _) => _buildScreen(context, data),
               smsListFailed: () =>
                   const Center(child: Text("Error loading messages")));
         },

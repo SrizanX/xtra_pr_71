@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 
+import '../../../design/design_system.dart';
+
 class ToggleButton extends StatelessWidget {
   final IconData icon;
   final String label;
   final bool isOn;
   final void Function()? onTap;
   final void Function()? onLongPress;
+
+  /// Side length of the square tile. Defaults to the responsive size for the
+  /// current device when not provided.
+  final double? size;
 
   const ToggleButton({
     super.key,
@@ -14,13 +20,15 @@ class ToggleButton extends StatelessWidget {
     required this.isOn,
     this.onTap,
     this.onLongPress,
+    this.size,
   });
 
   @override
   Widget build(BuildContext context) {
+    final side = size ?? AppDimensions.of(context).toggleButtonSize;
     return SizedBox(
-      height: 100,
-      width: 100,
+      height: side,
+      width: side,
       child: GestureDetector(
         onTap: onTap,
         onLongPress: onLongPress,
@@ -39,7 +47,7 @@ class ToggleButton extends StatelessWidget {
                       const Color(0xff363346),
                     ],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -50,14 +58,15 @@ class ToggleButton extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(AppSpacing.sm),
                   child: Icon(
                     icon,
+                    size: side * 0.26,
                     color: isOn ? const Color(0xFF004d66) : Colors.white54,
                   ),
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.sm),
               Text(
                 label,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(

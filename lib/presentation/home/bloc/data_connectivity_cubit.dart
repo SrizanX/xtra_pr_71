@@ -17,8 +17,24 @@ class DataConnectivityCubit extends Cubit<DataConnectivityState> {
     fetchConnectivityState();
   }
 
-  void updateNetworkMode(NetworkMode? selected) {
-    emit(state.copy(networkMode: selected));
+  void updateNetworkMode(NetworkMode selected) async {
+    if (selected == state.networkMode) return;
+    final previous = state.networkMode;
+    // Optimistically reflect the selection, then push it to the router.
+    emit(state.copy(networkMode: selected, isLoading: true));
+    final result = await InternetStateApiService().updateInternetState(
+      networkMode: selected,
+      isMobileDataEnabled: state.isMobileDataEnabled,
+      isRoamingEnabled: state.isRoamingEnabled,
+    );
+
+    switch (result) {
+      case Successful<StateResponse>():
+        emit(state.copy(isLoading: false, networkMode: selected));
+      case Failed<StateResponse>():
+        // Revert to the previous mode on failure.
+        emit(state.copy(isLoading: false, networkMode: previous));
+    }
   }
 
   // Update switch 1

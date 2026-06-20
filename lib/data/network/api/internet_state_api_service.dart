@@ -8,10 +8,11 @@ import '../../../domain/entity/internet/network_info.dart';
 import '../../../domain/type.dart';
 import '../../../domain/entity/network_mode.dart';
 import '../network_client.dart';
+import 'api_config.dart';
 
 class InternetStateApiService {
   Future<Result<NetworkInfo>> getInternetState() async {
-    const url = "http://192.168.0.1/jsonp_internetconn?callback=";
+    const url = "${ApiConfig.baseUrl}/jsonp_internetconn?callback=";
 
     var client = NetworkClient();
     var loginResult = await client.get(Uri.parse(url));
@@ -38,7 +39,7 @@ class InternetStateApiService {
       "isdataopen": isMobileDataEnabled ? 1 : 0,
     };
 
-    const url = "http://192.168.0.1/postnetwork";
+    const url = "${ApiConfig.baseUrl}/postnetwork";
     final uri = Uri.parse(url)
         .replace(queryParameters: {'postnetwork': jsonEncode(param)});
 

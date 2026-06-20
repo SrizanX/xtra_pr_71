@@ -15,7 +15,7 @@ class NetworkClient {
 
   factory NetworkClient() => instance;
 
-  Future<Result> get(Uri uri) {
+  Future<Result<String>> get(Uri uri) {
     return _handleHttpResponse(
       () => http.get(uri).timeout(Duration(seconds: _timeoutDuration)),
     );

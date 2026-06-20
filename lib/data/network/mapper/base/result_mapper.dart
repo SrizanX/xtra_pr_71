@@ -14,7 +14,18 @@ final class ResultMapper {
   }) {
     switch (result) {
       case Successful<NetworkModel>():
-        return Successful(data: mapper.map(result.data));
+        // Guard against malformed/unexpected payloads: a parsing failure
+        // becomes a Failed result instead of an uncaught exception.
+        try {
+          return Successful(data: mapper.map(result.data));
+        } on Exception catch (e) {
+          return Failed(message: "Unexpected response from router", exception: e);
+        } catch (e) {
+          return Failed(
+            message: "Unexpected response from router",
+            exception: Exception(e.toString()),
+          );
+        }
       case Failed<NetworkModel>():
         return Failed(message: result.message, exception: result.exception);
     }

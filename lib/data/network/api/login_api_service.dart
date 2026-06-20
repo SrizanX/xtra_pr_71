@@ -6,11 +6,12 @@ import 'package:xtra_pr_71/data/network/model/state_response.dart';
 import 'package:xtra_pr_71/domain/result.dart';
 
 import '../network_client.dart';
+import 'api_config.dart';
 
 class LoginApiService {
   Future<Result<StateResponse>> callLoginAPi(
       {required String username, required String password}) async {
-    const url = "http://192.168.0.1/adminLogin";
+    const url = "${ApiConfig.baseUrl}/adminLogin";
     // Set up parameters
     final param = {
       "username": username,
