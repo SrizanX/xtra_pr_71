@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../components/app_alert_dialog_widget.dart';
 import '../../../components/app_dialog_widget.dart';
 import 'bloc/wireless_info_cubit.dart';
 import '../../../components/login_components.dart';
@@ -66,12 +67,30 @@ class WifiSettingsEditorDialog extends StatelessWidget {
               );
             }),
             FilledButton(
-                onPressed: () {
-                  context.read<WirelessInfoCubit>().updateWirelessSettings();
-                },
+                onPressed: () { _confirmAndApply(context);},
                 child: const Text("Apply"))
           ],
         ),
+      ),
+    );
+  }
+
+  /// Applying wireless changes restarts the router, so confirm first.
+  void _confirmAndApply(BuildContext context) {
+    final cubit = context.read<WirelessInfoCubit>();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AppAlertDialog(
+        title: 'Apply Wi-Fi changes?',
+        message: 'Saving wireless settings restarts the router and briefly '
+            'disconnects all devices. Continue?',
+        confirmLabel: 'Apply',
+        confirmIcon: Icons.restart_alt,
+        onPositiveButtonClick: () {
+          cubit.updateWirelessSettings();
+          Navigator.pop(dialogContext); // close the warning
+          Navigator.pop(context); // close the editor
+        },
       ),
     );
   }

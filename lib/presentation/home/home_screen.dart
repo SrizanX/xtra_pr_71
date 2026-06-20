@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../data/shared_preferences/prefs_repository.dart';
 import '../../design/design_system.dart';
@@ -14,7 +13,6 @@ import '../../domain/entity/internet/internet_allowance.dart';
 import '../components/app_alert_dialog_widget.dart';
 import '../components/app_error_widget.dart';
 import '../components/surface_card.dart';
-import '../settings/settings_route.dart';
 import 'bloc/dashboard_cubit.dart';
 import 'bloc/dashboard_state.dart';
 import 'bloc/data_connectivity_cubit.dart';
@@ -83,7 +81,7 @@ class _HomeBody extends StatelessWidget {
                         Expanded(
                           child: GaugeCard(
                             progress: battery / 100,
-                            accent: ColorSelection.greenAccent.color,
+                            accent: AppColors.greenAccent,
                             icon: Icons.bolt,
                             value: battery,
                             title: 'Battery',
@@ -97,7 +95,7 @@ class _HomeBody extends StatelessWidget {
                           child: deviceInfo.issim
                               ? GaugeCard(
                                   progress: signal / 5,
-                                  accent: ColorSelection.blue_500.color,
+                                  accent: AppColors.blue500,
                                   icon: Icons.signal_cellular_alt,
                                   value: signalPercent,
                                   title:
@@ -106,7 +104,7 @@ class _HomeBody extends StatelessWidget {
                                 )
                               : GaugeCard(
                                   progress: 0,
-                                  accent: ColorSelection.amber.color,
+                                  accent: AppColors.amber,
                                   icon: Icons.sim_card_alert_outlined,
                                   value: 0,
                                   centerText: '—',
@@ -157,7 +155,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final green = ColorSelection.greenAccent.color;
+    final green = AppColors.greenAccent;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -187,7 +185,7 @@ class _Header extends StatelessWidget {
                   Text(
                     _statusLabel(deviceInfo.functionTimes),
                     style: textTheme.bodySmall?.copyWith(
-                      color: ColorSelection.white.color.withValues(alpha: 0.6),
+                      color: AppColors.white.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -196,15 +194,9 @@ class _Header extends StatelessWidget {
           ),
         ),
         _ActionChip(
-          icon: Icons.sms_outlined,
-          tooltip: 'Messages',
-          onTap: () => context.go('/messages'),
-        ),
-        const SizedBox(width: AppSpacing.sm),
-        _ActionChip(
-          icon: Icons.tune,
-          tooltip: 'Settings',
-          onTap: () => context.go(SettingsRoute.route),
+          icon: Icons.restart_alt,
+          tooltip: 'Reboot',
+          onTap: () => _confirmReboot(context),
         ),
         const SizedBox(width: AppSpacing.sm),
         _ActionChip(
@@ -217,13 +209,34 @@ class _Header extends StatelessWidget {
     );
   }
 
+  void _confirmReboot(BuildContext context) {
+    final homeCubit = context.read<HomeCubit>();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AppAlertDialog(
+        title: 'Reboot',
+        message: 'Reboot the router now? It will be unavailable for a minute.',
+        confirmLabel: 'Reboot',
+        confirmIcon: Icons.restart_alt,
+        onPositiveButtonClick: () {
+          homeCubit.reboot();
+          Navigator.pop(dialogContext);
+        },
+      ),
+    );
+  }
+
   void _confirmPowerOff(BuildContext context) {
     final homeCubit = context.read<HomeCubit>();
     showDialog(
       context: context,
       builder: (dialogContext) => AppAlertDialog(
         title: 'Shutdown',
-        message: 'Are you sure?',
+        message: 'Power off the router now? You will need physical access to '
+            'turn it back on.',
+        confirmLabel: 'Shut down',
+        confirmIcon: Icons.power_settings_new,
+        isDestructive: true,
         onPositiveButtonClick: () {
           homeCubit.powerOff();
           Navigator.pop(dialogContext);
@@ -248,7 +261,7 @@ class _ActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = accent ?? ColorSelection.white.color.withValues(alpha: 0.7);
+    final color = accent ?? AppColors.white.withValues(alpha: 0.7);
     return Tooltip(
       message: tooltip,
       child: InkWell(
@@ -258,7 +271,7 @@ class _ActionChip extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: ColorSelection.white.color.withValues(alpha: 0.06),
+            color: AppColors.white.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(AppRadius.md + 2),
           ),
           child: Icon(icon, size: 21, color: color),
@@ -279,7 +292,7 @@ class _InternetCard extends StatelessWidget {
     return BlocBuilder<DataConnectivityCubit, DataConnectivityState>(
       builder: (context, state) {
         final isOn = state.isMobileDataEnabled;
-        final green = ColorSelection.greenAccent.color;
+        final green = AppColors.greenAccent;
         return ToggleCard(
           icon: Icons.wifi_tethering,
           accent: green,
@@ -479,6 +492,25 @@ class _TrafficCardState extends State<_TrafficCard>
     super.dispose();
   }
 
+  Future<void> _confirmReset(BuildContext context) async {
+    final cubit = context.read<StatisticsCubit>();
+    final messenger = ScaffoldMessenger.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => const AppAlertDialog(
+        title: 'Reset traffic stats?',
+        message: 'This clears the session download, upload and total counters.',
+        confirmLabel: 'Reset',
+        confirmIcon: Icons.refresh,
+      ),
+    );
+    if (confirmed != true) return;
+    final ok = await cubit.clearTraffic();
+    messenger.showSnackBar(
+      SnackBar(content: Text(ok ? 'Traffic stats reset' : 'Reset failed')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -504,7 +536,7 @@ class _TrafficCardState extends State<_TrafficCard>
               Row(
                 children: [
                   Icon(Icons.insights,
-                      size: 18, color: ColorSelection.blue_500.color),
+                      size: 18, color: AppColors.blue500),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
                     'Traffic',
@@ -514,6 +546,12 @@ class _TrafficCardState extends State<_TrafficCard>
                   const Spacer(),
                   _LivePulse(animation: _pulse),
                   const SizedBox(width: AppSpacing.sm),
+                  _SmallIconButton(
+                    icon: Icons.restart_alt,
+                    tooltip: 'Reset stats',
+                    onTap: () => _confirmReset(context),
+                  ),
+                  const SizedBox(width: AppSpacing.xs),
                   _SmallIconButton(
                     icon: Icons.refresh,
                     tooltip: 'Refresh',
@@ -545,7 +583,7 @@ class _TrafficCardState extends State<_TrafficCard>
                   Expanded(
                     child: _TrafficMetric(
                       icon: Icons.south,
-                      accent: ColorSelection.greenAccent.color,
+                      accent: AppColors.greenAccent,
                       label: 'Download',
                       value: _fmtStat(stats?.download),
                     ),
@@ -554,7 +592,7 @@ class _TrafficCardState extends State<_TrafficCard>
                   Expanded(
                     child: _TrafficMetric(
                       icon: Icons.north,
-                      accent: ColorSelection.blue_500.color,
+                      accent: AppColors.blue500,
                       label: 'Upload',
                       value: _fmtStat(stats?.upload),
                     ),
@@ -564,7 +602,7 @@ class _TrafficCardState extends State<_TrafficCard>
               const SizedBox(height: AppSpacing.md),
               Divider(
                 height: 1,
-                color: ColorSelection.white.color.withValues(alpha: 0.08),
+                color: AppColors.white.withValues(alpha: 0.08),
               ),
               const SizedBox(height: AppSpacing.xs),
               _TrafficRow(
@@ -617,7 +655,7 @@ class _TrafficMetric extends StatelessWidget {
           Text(
             label,
             style: textTheme.bodySmall?.copyWith(
-              color: ColorSelection.white.color.withValues(alpha: 0.5),
+              color: AppColors.white.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -644,7 +682,7 @@ class _TrafficRow extends StatelessWidget {
     return Row(
       children: [
         Icon(icon,
-            size: 18, color: ColorSelection.white.color.withValues(alpha: 0.6)),
+            size: 18, color: AppColors.white.withValues(alpha: 0.6)),
         const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Text(
@@ -656,7 +694,7 @@ class _TrafficRow extends StatelessWidget {
           value,
           style: textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: ColorSelection.white.color.withValues(alpha: 0.85),
+            color: AppColors.white.withValues(alpha: 0.85),
           ),
         ),
       ],
@@ -687,11 +725,11 @@ class _SmallIconButton extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: ColorSelection.white.color.withValues(alpha: 0.06),
+            color: AppColors.white.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(AppRadius.md + 2),
           ),
           child: Icon(icon,
-              size: 19, color: ColorSelection.white.color.withValues(alpha: 0.7)),
+              size: 19, color: AppColors.white.withValues(alpha: 0.7)),
         ),
       ),
     );
@@ -706,7 +744,7 @@ class _LivePulse extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final green = ColorSelection.greenAccent.color;
+    final green = AppColors.greenAccent;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

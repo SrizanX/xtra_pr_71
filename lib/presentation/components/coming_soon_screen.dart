@@ -27,7 +27,7 @@ class ComingSoonScreen extends StatelessWidget {
               Icon(
                 icon,
                 size: 56,
-                color: ColorSelection.white.color.withValues(alpha: 0.3),
+                color: AppColors.white.withValues(alpha: 0.3),
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
@@ -38,7 +38,7 @@ class ComingSoonScreen extends StatelessWidget {
               Text(
                 'Coming soon',
                 style: textTheme.bodyMedium?.copyWith(
-                  color: ColorSelection.white.color.withValues(alpha: 0.5),
+                  color: AppColors.white.withValues(alpha: 0.5),
                 ),
               ),
             ],

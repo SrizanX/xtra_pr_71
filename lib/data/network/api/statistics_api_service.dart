@@ -12,4 +12,12 @@ class StatisticsApiService {
     final result = await NetworkClient().get(Uri.parse(url));
     return ResultMapper().map(result: result, mapper: StatisticsApiMapper());
   }
+
+  /// Resets the session traffic counters. Takes no parameters; the response is
+  /// the (zeroed) stats rather than a state flag, so a successful HTTP call is
+  /// treated as success.
+  Future<Result<String>> clearTraffic() async {
+    const url = "${ApiConfig.baseUrl}/triffic_clear";
+    return NetworkClient().get(Uri.parse(url));
+  }
 }

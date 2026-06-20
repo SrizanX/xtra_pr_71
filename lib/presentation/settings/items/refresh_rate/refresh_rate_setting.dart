@@ -60,7 +60,7 @@ class RefreshRateSetting extends StatelessWidget {
               const SizedBox(width: AppSpacing.xs),
               Icon(
                 Icons.chevron_right,
-                color: ColorSelection.white.color.withValues(alpha: 0.4),
+                color: AppColors.white.withValues(alpha: 0.4),
               ),
             ],
           ),

@@ -80,7 +80,7 @@ class _Header extends StatelessWidget {
               Text(
                 'Access point · filtering · devices',
                 style: textTheme.bodySmall?.copyWith(
-                  color: ColorSelection.white.color.withValues(alpha: 0.5),
+                  color: AppColors.white.withValues(alpha: 0.5),
                 ),
               ),
             ],
@@ -120,7 +120,7 @@ class _ApnCard extends StatelessWidget {
           child: Row(
             children: [
               _IconChip(
-                  icon: Icons.cell_tower, accent: ColorSelection.blue_500.color),
+                  icon: Icons.cell_tower, accent: AppColors.blue500),
               const SizedBox(width: AppSpacing.md),
               Expanded(
                 child: Column(
@@ -138,7 +138,7 @@ class _ApnCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.bodySmall?.copyWith(
                         color:
-                            ColorSelection.white.color.withValues(alpha: 0.55),
+                            AppColors.white.withValues(alpha: 0.55),
                       ),
                     ),
                   ],
@@ -148,7 +148,7 @@ class _ApnCard extends StatelessWidget {
                 Icon(
                   Icons.edit_outlined,
                   size: 18,
-                  color: ColorSelection.white.color.withValues(alpha: 0.6),
+                  color: AppColors.white.withValues(alpha: 0.6),
                 ),
             ],
           ),
@@ -198,7 +198,7 @@ class _MacFilterCard extends StatelessWidget {
                 children: [
                   _IconChip(
                     icon: Icons.shield_outlined,
-                    accent: ColorSelection.amber.color,
+                    accent: AppColors.amber,
                   ),
                   const SizedBox(width: AppSpacing.md),
                   Expanded(
@@ -215,7 +215,7 @@ class _MacFilterCard extends StatelessWidget {
                           subtitle,
                           style: textTheme.bodySmall?.copyWith(
                             color:
-                                ColorSelection.white.color.withValues(alpha: 0.55),
+                                AppColors.white.withValues(alpha: 0.55),
                           ),
                         ),
                       ],
@@ -287,7 +287,7 @@ class _ModeToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xxs),
       decoration: BoxDecoration(
-        color: ColorSelection.white.color.withValues(alpha: 0.05),
+        color: AppColors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Row(
@@ -305,7 +305,7 @@ class _ModeToggle extends StatelessWidget {
     required bool selected,
     required VoidCallback onTap,
   }) {
-    final accent = ColorSelection.amber.color;
+    final accent = AppColors.amber;
     return Expanded(
       child: InkWell(
         onTap: onTap,
@@ -327,7 +327,7 @@ class _ModeToggle extends StatelessWidget {
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
                 color: selected
                     ? accent
-                    : ColorSelection.white.color.withValues(alpha: 0.7),
+                    : AppColors.white.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -480,7 +480,7 @@ class _DeviceRow extends StatelessWidget {
             icon: blocked ? Icons.block : Icons.devices_other,
             accent: blocked
                 ? Theme.of(context).colorScheme.error
-                : ColorSelection.blue_500.color,
+                : AppColors.blue500,
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -500,7 +500,7 @@ class _DeviceRow extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: textTheme.bodySmall?.copyWith(
-                    color: ColorSelection.white.color.withValues(alpha: 0.5),
+                    color: AppColors.white.withValues(alpha: 0.5),
                   ),
                 ),
               ],
@@ -569,13 +569,13 @@ class _SquareIconButton extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: ColorSelection.white.color.withValues(alpha: 0.06),
+          color: AppColors.white.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(AppRadius.md + 2),
         ),
         child: Icon(
           icon,
           size: 21,
-          color: ColorSelection.white.color.withValues(alpha: 0.7),
+          color: AppColors.white.withValues(alpha: 0.7),
         ),
       ),
     );
@@ -585,7 +585,7 @@ class _SquareIconButton extends StatelessWidget {
 Widget _divider() => Divider(
       height: 1,
       thickness: 1,
-      color: ColorSelection.white.color.withValues(alpha: 0.06),
+      color: AppColors.white.withValues(alpha: 0.06),
     );
 
 Widget _emptyText(BuildContext context, String text) => Padding(
@@ -594,7 +594,7 @@ Widget _emptyText(BuildContext context, String text) => Padding(
         child: Text(
           text,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ColorSelection.white.color.withValues(alpha: 0.5),
+                color: AppColors.white.withValues(alpha: 0.5),
               ),
         ),
       ),

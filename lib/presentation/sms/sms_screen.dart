@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:math' as math;
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:xtra_pr_71/design/color_seleection.dart';
+import 'package:xtra_pr_71/design/app_colors.dart';
 import 'package:xtra_pr_71/domain/entity/sms/sms.dart';
 import '../components/centered_progress_indicator.dart';
 import 'bloc/sms_cubit.dart';
@@ -73,10 +73,10 @@ class SmsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: ColorSelection.darkBlue.color,
+        color: AppColors.darkBlue,
         border: Border(
           top: BorderSide(
-            color: ColorSelection.darkBlueTransparent.color,
+            color: AppColors.darkBlue,
             width: 1,
           ),
         ),
@@ -90,7 +90,7 @@ class SmsScreen extends StatelessWidget {
             child: Text(
               'Page $currentPage of $totalPages',
               style: TextStyle(
-                color: ColorSelection.white.color,
+                color: AppColors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -106,7 +106,7 @@ class SmsScreen extends StatelessWidget {
                   context,
                   Icons.first_page,
                   () => context.read<SmsCubit>().fetchSms(1),
-                  ColorSelection.blue_500.color,
+                  AppColors.blue500,
                 ),
 
               // Previous page button
@@ -117,8 +117,8 @@ class SmsScreen extends StatelessWidget {
                     ? () => context.read<SmsCubit>().fetchSms(currentPage - 1)
                     : null,
                 currentPage > 1
-                    ? ColorSelection.blue_500.color
-                    : ColorSelection.darkBlueTransparent.color,
+                    ? AppColors.blue500
+                    : AppColors.darkBlue,
               ),
 
               // Compact pagination display for large page counts
@@ -141,8 +141,8 @@ class SmsScreen extends StatelessWidget {
                     ? () => context.read<SmsCubit>().fetchSms(currentPage + 1)
                     : null,
                 currentPage < totalPages
-                    ? ColorSelection.blue_500.color
-                    : ColorSelection.darkBlueTransparent.color,
+                    ? AppColors.blue500
+                    : AppColors.darkBlue,
               ),
 
               // Last page button
@@ -151,7 +151,7 @@ class SmsScreen extends StatelessWidget {
                   context,
                   Icons.last_page,
                   () => context.read<SmsCubit>().fetchSms(totalPages),
-                  ColorSelection.blue_500.color,
+                  AppColors.blue500,
                 ),
             ],
           ),
@@ -246,12 +246,12 @@ class SmsScreen extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: isActive
-              ? ColorSelection.blue_500.color.withValues(alpha: 0.3)
+              ? AppColors.blue500.withValues(alpha: 0.3)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
             color:
-                isActive ? ColorSelection.blue_500.color : Colors.transparent,
+                isActive ? AppColors.blue500 : Colors.transparent,
             width: 1,
           ),
         ),
@@ -259,8 +259,8 @@ class SmsScreen extends StatelessWidget {
           '$pageNumber',
           style: TextStyle(
             color: isActive
-                ? ColorSelection.white.color
-                : ColorSelection.white.color.withValues(alpha: 0.6),
+                ? AppColors.white
+                : AppColors.white.withValues(alpha: 0.6),
             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
           ),
         ),

@@ -44,6 +44,16 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     _timer = Timer(Duration(milliseconds: ms), _loop);
   }
 
+  /// Resets the router's traffic counters, then refreshes. Returns whether the
+  /// reset request succeeded.
+  Future<bool> clearTraffic() async {
+    final result = await StatisticsApiService().clearTraffic();
+    if (isClosed) return false;
+    final ok = result is Successful<String>;
+    if (ok) fetchStatistics();
+    return ok;
+  }
+
   Future<void> fetchStatistics() async {
     if (_inFlight) return;
     _inFlight = true;

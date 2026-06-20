@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../components/app_alert_dialog_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -133,7 +135,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
               child: Text(
                 _showSent ? 'No sent messages' : 'No messages',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: ColorSelection.white.color.withValues(alpha: 0.5),
+                  color: AppColors.white.withValues(alpha: 0.5),
                 ),
               ),
             ),
@@ -149,7 +151,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: ColorSelection.white.color.withValues(alpha: 0.06),
+                      color: AppColors.white.withValues(alpha: 0.06),
                     ),
                   _ThreadTile(
                     thread: threads[i],
@@ -250,7 +252,7 @@ class _Header extends StatelessWidget {
               Text(
                 'SIM storage · $total ${total == 1 ? 'message' : 'messages'}',
                 style: textTheme.bodySmall?.copyWith(
-                  color: ColorSelection.white.color.withValues(alpha: 0.5),
+                  color: AppColors.white.withValues(alpha: 0.5),
                 ),
               ),
             ],
@@ -263,13 +265,13 @@ class _Header extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: ColorSelection.white.color.withValues(alpha: 0.06),
+              color: AppColors.white.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(AppRadius.md + 2),
             ),
             child: Icon(
               Icons.refresh,
               size: 21,
-              color: ColorSelection.white.color.withValues(alpha: 0.7),
+              color: AppColors.white.withValues(alpha: 0.7),
             ),
           ),
         ),
@@ -289,7 +291,7 @@ class _QuickActions extends StatelessWidget {
       icon: Icons.dialpad,
       title: 'USSD',
       subtitle: 'Run a code',
-      accent: ColorSelection.blue_500.color,
+      accent: AppColors.blue500,
       onTap: onUssd,
     );
   }
@@ -313,7 +315,7 @@ class _QuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final color = accent ?? ColorSelection.white.color.withValues(alpha: 0.7);
+    final color = accent ?? AppColors.white.withValues(alpha: 0.7);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.md + 2),
@@ -327,7 +329,7 @@ class _QuickAction extends StatelessWidget {
             ? null
             : [
                 accent!.withValues(alpha: 0.1),
-                ColorSelection.white.color.withValues(alpha: 0.04),
+                AppColors.white.withValues(alpha: 0.04),
               ],
         borderColor: accent?.withValues(alpha: 0.22),
         child: Row(
@@ -346,7 +348,7 @@ class _QuickAction extends StatelessWidget {
                 Text(
                   subtitle,
                   style: textTheme.bodySmall?.copyWith(
-                    color: ColorSelection.white.color.withValues(alpha: 0.45),
+                    color: AppColors.white.withValues(alpha: 0.45),
                   ),
                 ),
               ],
@@ -378,7 +380,7 @@ class _InboxSentToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.xs + 1),
       decoration: BoxDecoration(
-        color: ColorSelection.white.color.withValues(alpha: 0.05),
+        color: AppColors.white.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(AppRadius.md + 3),
       ),
       child: Row(
@@ -407,8 +409,8 @@ class _InboxSentToggle extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     final textColor = selected
-        ? ColorSelection.white.color
-        : ColorSelection.white.color.withValues(alpha: 0.55);
+        ? AppColors.white
+        : AppColors.white.withValues(alpha: 0.55);
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -416,7 +418,7 @@ class _InboxSentToggle extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm + 1),
           decoration: BoxDecoration(
             color: selected
-                ? ColorSelection.blue_500.color
+                ? AppColors.blue500
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(AppRadius.md - 1),
           ),
@@ -431,7 +433,7 @@ class _InboxSentToggle extends StatelessWidget {
                       text: '  $count',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: ColorSelection.white.color.withValues(
+                        color: AppColors.white.withValues(
                           alpha: selected ? 0.85 : 0.5,
                         ),
                       ),
@@ -511,7 +513,7 @@ class _ThreadTile extends StatelessWidget {
                       Text(
                         formatSmsTime(thread.latest.sentAt),
                         style: textTheme.bodySmall?.copyWith(
-                          color: ColorSelection.blue_500.color.withValues(
+                          color: AppColors.blue500.withValues(
                             alpha: 0.8,
                           ),
                           fontWeight: FontWeight.w600,
@@ -525,7 +527,7 @@ class _ThreadTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.bodySmall?.copyWith(
-                      color: ColorSelection.white.color.withValues(alpha: 0.6),
+                      color: AppColors.white.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -551,25 +553,13 @@ class _ThreadTile extends StatelessWidget {
     final messenger = ScaffoldMessenger.of(context);
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Delete conversation?'),
-        content: Text(
-          'Delete all $count ${count == 1 ? 'message' : 'messages'} with '
-          '${thread.phoneNumber}? This removes them from the SIM.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(dialogContext).colorScheme.error,
-            ),
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Delete'),
-          ),
-        ],
+      builder: (dialogContext) => AppAlertDialog(
+        title: 'Delete conversation?',
+        message: 'Delete all $count ${count == 1 ? 'message' : 'messages'} '
+            'with ${thread.phoneNumber}? This removes them from the SIM.',
+        confirmLabel: 'Delete',
+        confirmIcon: Icons.delete_outline,
+        isDestructive: true,
       ),
     );
     if (confirmed != true) return;
@@ -592,7 +582,7 @@ class _Avatar extends StatelessWidget {
       height: 44,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: ColorSelection.blue_500.color.withValues(alpha: 0.18),
+        color: AppColors.blue500.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(AppRadius.md + 2),
       ),
       child: Text(
@@ -600,7 +590,7 @@ class _Avatar extends StatelessWidget {
         style: TextStyle(
           fontSize: label.length > 2 ? 12 : 15,
           fontWeight: FontWeight.w700,
-          color: const Color(0xff8ab4ff),
+          color: AppColors.blueLight,
         ),
       ),
     );

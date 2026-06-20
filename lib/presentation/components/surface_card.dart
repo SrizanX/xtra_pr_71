@@ -27,9 +27,9 @@ class SurfaceCard extends StatelessWidget {
   /// Optional accent border. Defaults to the hairline white border.
   final Color? borderColor;
 
-  static Color get _fill => ColorSelection.white.color.withValues(alpha: 0.045);
+  static Color get _fill => AppColors.white.withValues(alpha: 0.045);
   static Color get _border =>
-      ColorSelection.white.color.withValues(alpha: 0.07);
+      AppColors.white.withValues(alpha: 0.07);
 
   @override
   Widget build(BuildContext context) {

@@ -121,7 +121,7 @@ class _CodeListCard extends StatelessWidget {
               Divider(
                 height: 1,
                 thickness: 1,
-                color: ColorSelection.white.color.withValues(alpha: 0.06),
+                color: AppColors.white.withValues(alpha: 0.06),
               ),
             _QuickCodeTile(
               icon: codes[i].icon,
@@ -147,7 +147,7 @@ class _Header extends StatelessWidget {
           constraints: const BoxConstraints(),
           onPressed: () => Navigator.of(context).maybePop(),
           icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-          color: ColorSelection.white.color.withValues(alpha: 0.7),
+          color: AppColors.white.withValues(alpha: 0.7),
         ),
         const SizedBox(width: AppSpacing.md),
         Text(
@@ -174,7 +174,7 @@ class _SectionLabel extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w700,
           letterSpacing: 0.8,
-          color: ColorSelection.white.color.withValues(alpha: 0.4),
+          color: AppColors.white.withValues(alpha: 0.4),
         ),
       ),
     );
@@ -207,13 +207,13 @@ class _CodeInput extends StatelessWidget {
                 fontSize: 22,
                 fontWeight: FontWeight.w600,
                 letterSpacing: 1,
-                color: ColorSelection.white.color,
+                color: AppColors.white,
               ),
               decoration: InputDecoration.collapsed(
                 hintText: '*123#',
                 hintStyle: TextStyle(
                   fontSize: 22,
-                  color: ColorSelection.white.color.withValues(alpha: 0.35),
+                  color: AppColors.white.withValues(alpha: 0.35),
                 ),
               ),
               onSubmitted: (_) => onDial(),
@@ -256,7 +256,7 @@ class _QuickCodeTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: ColorSelection.blue_500.color),
+            Icon(icon, size: 20, color: AppColors.blue500),
             const SizedBox(width: AppSpacing.md),
             Expanded(
               child: Text(
@@ -269,7 +269,7 @@ class _QuickCodeTile extends StatelessWidget {
               code,
               style: textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: ColorSelection.white.color.withValues(alpha: 0.6),
+                color: AppColors.white.withValues(alpha: 0.6),
               ),
             ),
           ],
@@ -393,10 +393,10 @@ class _ResponseCard extends StatelessWidget {
     return SurfaceCard(
       borderRadius: AppRadius.md + 2,
       gradientColors: [
-        ColorSelection.blue_500.color.withValues(alpha: 0.12),
-        ColorSelection.white.color.withValues(alpha: 0.04),
+        AppColors.blue500.withValues(alpha: 0.12),
+        AppColors.white.withValues(alpha: 0.04),
       ],
-      borderColor: ColorSelection.blue_500.color.withValues(alpha: 0.2),
+      borderColor: AppColors.blue500.withValues(alpha: 0.2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -414,9 +414,9 @@ class _ResponseCard extends StatelessWidget {
                     vertical: AppSpacing.sm + 2,
                   ),
                   decoration: BoxDecoration(
-                    color: ColorSelection.white.color.withValues(alpha: 0.06),
+                    color: AppColors.white.withValues(alpha: 0.06),
                     border: Border.all(
-                      color: ColorSelection.white.color.withValues(alpha: 0.1),
+                      color: AppColors.white.withValues(alpha: 0.1),
                     ),
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
@@ -424,13 +424,13 @@ class _ResponseCard extends StatelessWidget {
                     controller: replyController,
                     style: TextStyle(
                       fontSize: 13.5,
-                      color: ColorSelection.white.color,
+                      color: AppColors.white,
                     ),
                     decoration: InputDecoration.collapsed(
                       hintText: 'Reply…',
                       hintStyle: TextStyle(
                         color:
-                            ColorSelection.white.color.withValues(alpha: 0.45),
+                            AppColors.white.withValues(alpha: 0.45),
                       ),
                     ),
                     onSubmitted: (_) => onSendReply(),

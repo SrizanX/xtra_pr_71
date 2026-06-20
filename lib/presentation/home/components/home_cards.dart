@@ -72,7 +72,7 @@ class GaugeCard extends StatelessWidget {
             subtitle,
             textAlign: TextAlign.center,
             style: textTheme.bodySmall?.copyWith(
-              color: ColorSelection.white.color.withValues(alpha: 0.45),
+              color: AppColors.white.withValues(alpha: 0.45),
             ),
           ),
         ],
@@ -104,7 +104,7 @@ class StatTile extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: ColorSelection.blue_500.color, size: 20),
+          Icon(icon, color: AppColors.blue500, size: 20),
           const SizedBox(height: AppSpacing.sm),
           Text(
             value,
@@ -114,7 +114,7 @@ class StatTile extends StatelessWidget {
           Text(
             label,
             style: textTheme.bodySmall?.copyWith(
-              color: ColorSelection.white.color.withValues(alpha: 0.45),
+              color: AppColors.white.withValues(alpha: 0.45),
             ),
           ),
         ],
@@ -176,7 +176,7 @@ class ToggleCard extends StatelessWidget {
             ? null
             : [
                 accentColor.withValues(alpha: 0.12),
-                ColorSelection.white.color.withValues(alpha: 0.04),
+                AppColors.white.withValues(alpha: 0.04),
               ],
         borderColor: accentColor?.withValues(alpha: 0.22),
         child: Column(
@@ -202,7 +202,7 @@ class ToggleCard extends StatelessWidget {
                         subtitle,
                         style: textTheme.bodySmall?.copyWith(
                           color: subtitleColor ??
-                              ColorSelection.white.color
+                              AppColors.white
                                   .withValues(alpha: 0.45),
                           fontWeight:
                               subtitleColor != null ? FontWeight.w600 : null,
@@ -219,7 +219,7 @@ class ToggleCard extends StatelessWidget {
                     icon: Icon(
                       Icons.edit_outlined,
                       size: 18,
-                      color: ColorSelection.white.color.withValues(alpha: 0.6),
+                      color: AppColors.white.withValues(alpha: 0.6),
                     ),
                   ),
                 Switch(value: value, onChanged: onChanged),
@@ -230,7 +230,7 @@ class ToggleCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 child: Divider(
                   height: 1,
-                  color: ColorSelection.white.color.withValues(alpha: 0.08),
+                  color: AppColors.white.withValues(alpha: 0.08),
                 ),
               ),
               footer!,
@@ -268,7 +268,7 @@ class InlineToggleRow extends StatelessWidget {
         Icon(
           icon,
           size: 20,
-          color: ColorSelection.white.color.withValues(alpha: 0.7),
+          color: AppColors.white.withValues(alpha: 0.7),
         ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
@@ -284,7 +284,7 @@ class InlineToggleRow extends StatelessWidget {
               Text(
                 subtitle,
                 style: textTheme.bodySmall?.copyWith(
-                  color: ColorSelection.white.color.withValues(alpha: 0.45),
+                  color: AppColors.white.withValues(alpha: 0.45),
                 ),
               ),
             ],
@@ -316,7 +316,7 @@ class NetworkModeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final accentColor = accent ?? ColorSelection.blue_500.color;
+    final accentColor = accent ?? AppColors.blue500;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -325,13 +325,13 @@ class NetworkModeSelector extends StatelessWidget {
             Icon(
               Icons.network_cell,
               size: 16,
-              color: ColorSelection.white.color.withValues(alpha: 0.6),
+              color: AppColors.white.withValues(alpha: 0.6),
             ),
             const SizedBox(width: AppSpacing.xs),
             Text(
               'Network mode',
               style: textTheme.bodySmall?.copyWith(
-                color: ColorSelection.white.color.withValues(alpha: 0.6),
+                color: AppColors.white.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -343,7 +343,7 @@ class NetworkModeSelector extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(AppSpacing.xxs),
             decoration: BoxDecoration(
-              color: ColorSelection.white.color.withValues(alpha: 0.05),
+              color: AppColors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Row(
@@ -383,7 +383,7 @@ class _NetworkSegment extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final selectedColor =
-        isSelected ? accent : ColorSelection.white.color.withValues(alpha: 0.7);
+        isSelected ? accent : AppColors.white.withValues(alpha: 0.7);
     return Tooltip(
       message: mode.label,
       child: InkWell(
@@ -426,12 +426,12 @@ class _IconChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = accent ?? ColorSelection.white.color.withValues(alpha: 0.7);
+    final color = accent ?? AppColors.white.withValues(alpha: 0.7);
     return Container(
       width: 46,
       height: 46,
       decoration: BoxDecoration(
-        color: (accent ?? ColorSelection.white.color)
+        color: (accent ?? AppColors.white)
             .withValues(alpha: accent == null ? 0.06 : 0.16),
         borderRadius: BorderRadius.circular(AppRadius.md + 2),
       ),
@@ -456,7 +456,7 @@ class DataUsageBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final muted = ColorSelection.white.color.withValues(alpha: 0.5);
+    final muted = AppColors.white.withValues(alpha: 0.5);
     final fraction =
         limitBytes <= 0 ? 0.0 : (usedBytes / limitBytes).clamp(0.0, 1.0);
     final remaining =
@@ -464,7 +464,7 @@ class DataUsageBar extends StatelessWidget {
     final nearCap = fraction >= 0.9;
     final barColor = nearCap
         ? Theme.of(context).colorScheme.error
-        : ColorSelection.blue_500.color;
+        : AppColors.blue500;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -490,7 +490,7 @@ class DataUsageBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: fraction,
             minHeight: 8,
-            backgroundColor: ColorSelection.white.color.withValues(alpha: 0.1),
+            backgroundColor: AppColors.white.withValues(alpha: 0.1),
             valueColor: AlwaysStoppedAnimation(barColor),
           ),
         ),

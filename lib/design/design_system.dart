@@ -13,5 +13,5 @@ export 'app_dimensions.dart';
 export 'app_spacing.dart';
 export 'app_typography.dart';
 export 'breakpoints.dart';
-export 'color_seleection.dart';
+export 'app_colors.dart';
 export 'responsive.dart';

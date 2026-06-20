@@ -135,7 +135,7 @@ class _ConversationHeader extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: ColorSelection.white.color.withValues(alpha: 0.06),
+            color: AppColors.white.withValues(alpha: 0.06),
           ),
         ),
       ),
@@ -144,17 +144,17 @@ class _ConversationHeader extends StatelessWidget {
           IconButton(
             onPressed: () => Navigator.of(context).maybePop(),
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-            color: ColorSelection.white.color.withValues(alpha: 0.7),
+            color: AppColors.white.withValues(alpha: 0.7),
           ),
           Container(
             width: 40,
             height: 40,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: ColorSelection.greenAccent.color.withValues(alpha: 0.16),
+              color: AppColors.greenAccent.withValues(alpha: 0.16),
               borderRadius: BorderRadius.circular(AppRadius.md + 1),
             ),
-            child: Icon(Icons.person, color: ColorSelection.greenAccent.color),
+            child: Icon(Icons.person, color: AppColors.greenAccent),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
@@ -170,7 +170,7 @@ class _ConversationHeader extends StatelessWidget {
               const SnackBar(content: Text('Calling isn\'t supported here.')),
             ),
             icon: const Icon(Icons.call),
-            color: ColorSelection.blue_500.color,
+            color: AppColors.blue500,
           ),
         ],
       ),
@@ -193,7 +193,7 @@ class _DaySeparator extends StatelessWidget {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: ColorSelection.white.color.withValues(alpha: 0.35),
+            color: AppColors.white.withValues(alpha: 0.35),
           ),
         ),
       ),
@@ -238,8 +238,8 @@ class _Bubble extends StatelessWidget {
         ),
         decoration: BoxDecoration(
           color: isSent
-              ? ColorSelection.blue_500.color
-              : ColorSelection.white.color.withValues(alpha: 0.07),
+              ? AppColors.blue500
+              : AppColors.white.withValues(alpha: 0.07),
           borderRadius: radius,
         ),
         child: Column(
@@ -250,7 +250,7 @@ class _Bubble extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 height: 1.4,
-                color: ColorSelection.white.color,
+                color: AppColors.white,
               ),
             ),
             const SizedBox(height: AppSpacing.xs + 1),
@@ -258,7 +258,7 @@ class _Bubble extends StatelessWidget {
               isSent ? '$time · Sent' : time,
               style: TextStyle(
                 fontSize: 10,
-                color: ColorSelection.white.color
+                color: AppColors.white
                     .withValues(alpha: isSent ? 0.7 : 0.4),
               ),
             ),
@@ -289,7 +289,7 @@ class _Composer extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: ColorSelection.white.color.withValues(alpha: 0.06),
+            color: AppColors.white.withValues(alpha: 0.06),
           ),
         ),
       ),
@@ -303,9 +303,9 @@ class _Composer extends StatelessWidget {
                 vertical: AppSpacing.sm + 2,
               ),
               decoration: BoxDecoration(
-                color: ColorSelection.white.color.withValues(alpha: 0.06),
+                color: AppColors.white.withValues(alpha: 0.06),
                 border: Border.all(
-                  color: ColorSelection.white.color.withValues(alpha: 0.09),
+                  color: AppColors.white.withValues(alpha: 0.09),
                 ),
                 borderRadius: BorderRadius.circular(AppRadius.lg + 2),
               ),
@@ -318,13 +318,13 @@ class _Composer extends StatelessWidget {
                     maxLines: 4,
                     style: TextStyle(
                       fontSize: 14,
-                      color: ColorSelection.white.color,
+                      color: AppColors.white,
                     ),
                     decoration: InputDecoration.collapsed(
                       hintText: 'Message',
                       hintStyle: TextStyle(
                         color:
-                            ColorSelection.white.color.withValues(alpha: 0.4),
+                            AppColors.white.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
@@ -335,7 +335,7 @@ class _Composer extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10.5,
                         color:
-                            ColorSelection.white.color.withValues(alpha: 0.4),
+                            AppColors.white.withValues(alpha: 0.4),
                       ),
                     ),
                   ],
@@ -350,10 +350,10 @@ class _Composer extends StatelessWidget {
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: ColorSelection.blue_500.color,
+                color: AppColors.blue500,
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.send, color: ColorSelection.white.color, size: 22),
+              child: Icon(Icons.send, color: AppColors.white, size: 22),
             ),
           ),
         ],

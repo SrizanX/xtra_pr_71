@@ -40,7 +40,7 @@ class SpeedGauge extends StatelessWidget {
             painter: _SpeedGaugePainter(
               value: animated,
               maxValue: maxValue,
-              trackColor: ColorSelection.white.color.withValues(alpha: 0.08),
+              trackColor: AppColors.white.withValues(alpha: 0.08),
             ),
             child: _Readout(value: value, unit: unit),
           );
@@ -84,7 +84,7 @@ class _Readout extends StatelessWidget {
               fontSize: 13,
               fontWeight: FontWeight.w700,
               letterSpacing: 2,
-              color: ColorSelection.white.color.withValues(alpha: 0.5),
+              color: AppColors.white.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -109,9 +109,9 @@ class _SpeedGaugePainter extends CustomPainter {
   static const double _sweepAngle = math.pi * 1.5; // 270°
 
   static const _zoneColors = [
-    Color(0xff43e0a0), // green
-    Color(0xfff5b14c), // amber
-    Color(0xffff5a5a), // red
+    AppColors.greenAccent,
+    AppColors.amber,
+    AppColors.danger,
   ];
 
   @override
@@ -153,11 +153,11 @@ class _SpeedGaugePainter extends CustomPainter {
   void _paintTicks(Canvas canvas, Offset center, double radius) {
     const majorCount = 10; // 10 segments → 11 ticks
     final major = Paint()
-      ..color = ColorSelection.white.color.withValues(alpha: 0.55)
+      ..color = AppColors.white.withValues(alpha: 0.55)
       ..strokeWidth = 2.5
       ..strokeCap = StrokeCap.round;
     final minor = Paint()
-      ..color = ColorSelection.white.color.withValues(alpha: 0.25)
+      ..color = AppColors.white.withValues(alpha: 0.25)
       ..strokeWidth = 1.2;
     final tickRadius = radius - 12;
 
@@ -196,7 +196,7 @@ class _SpeedGaugePainter extends CustomPainter {
       ..lineTo(baseB.dx, baseB.dy)
       ..close();
 
-    const needleColor = Color(0xffff5a5a);
+    const needleColor = AppColors.danger;
     canvas.drawPath(
       needlePath,
       Paint()
@@ -207,7 +207,7 @@ class _SpeedGaugePainter extends CustomPainter {
 
     // Hub.
     canvas.drawCircle(
-        center, 9, Paint()..color = ColorSelection.darkBlue.color);
+        center, 9, Paint()..color = AppColors.darkBlue);
     canvas.drawCircle(
       center,
       9,
@@ -217,7 +217,7 @@ class _SpeedGaugePainter extends CustomPainter {
         ..strokeWidth = 3,
     );
     canvas.drawCircle(
-        center, 3, Paint()..color = ColorSelection.white.color);
+        center, 3, Paint()..color = AppColors.white);
   }
 
   @override

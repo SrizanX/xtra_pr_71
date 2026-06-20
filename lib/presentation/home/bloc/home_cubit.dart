@@ -7,17 +7,23 @@ import 'home_state.dart';
 class HomeCubit extends Cubit<HomeSate> {
   HomeCubit() : super(HomeSate());
 
+  void reboot() async {
+    final result = await RouterControlApiService().restart();
+    switch (result) {
+      case Successful():
+        debugPrint('${result.data}');
+      case Failed():
+        debugPrint(result.message);
+    }
+  }
+
   void powerOff() async {
     final result = await RouterControlApiService().powerOff();
     switch (result) {
       case Successful():
-        if (kDebugMode) {
-          print(result.data);
-        }
+        debugPrint('${result.data}');
       case Failed():
-        if (kDebugMode) {
-          print(result.message);
-        }
+        debugPrint(result.message);
     }
   }
 }

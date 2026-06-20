@@ -247,7 +247,7 @@ class _SectionLabel extends StatelessWidget {
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
               letterSpacing: 1.3,
-              color: ColorSelection.white.color.withValues(alpha: 0.5),
+              color: AppColors.white.withValues(alpha: 0.5),
             ),
       ),
     );
