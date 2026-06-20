@@ -91,10 +91,10 @@ class LoginScreen extends StatelessWidget {
                           foregroundColor: AppColors.white,
                           disabledBackgroundColor:
                               AppColors.blue500.withValues(alpha: 0.5),
-                          textStyle: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
+                          // Derive from the theme (rather than a bare TextStyle)
+                          // so the font family resolves consistently.
+                          textStyle: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(fontSize: 16, fontWeight: FontWeight.w700),
                           shape: RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.circular(AppRadius.md),
