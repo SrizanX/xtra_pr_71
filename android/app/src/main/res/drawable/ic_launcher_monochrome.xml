@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- XTRA PR71 launcher icon - Option D "Device Mark" monochrome layer.
+     Single-colour silhouette for Android 13+ themed icons: the launcher ignores
+     colour and tints the whole drawable by its alpha, so everything is solid white
+     and the decorative diagonal accent is dropped to keep the mark clean.
+     Placement (translate 18 / scale 0.6 into the 72dp safe zone) matches the
+     foreground layer so the themed icon lines up with the full-colour one. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:translateX="18"
+        android:translateY="18"
+        android:scaleX="0.6"
+        android:scaleY="0.6">
+
+        <!-- router body -->
+        <path
+            android:pathData="M47,14 H73 A17,17 0 0 1 90,31 V89 A17,17 0 0 1 73,106 H47 A17,17 0 0 1 30,89 V31 A17,17 0 0 1 47,14 Z"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="5" />
+
+        <!-- antenna -->
+        <path
+            android:pathData="M85,5.5 H90 A6.5,6.5 0 0 1 96.5,12 V14 A6.5,6.5 0 0 1 90,20.5 H85 A6.5,6.5 0 0 1 78.5,14 V12 A6.5,6.5 0 0 1 85,5.5 Z"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="4.5" />
+
+        <!-- three function keys -->
+        <path
+            android:pathData="M68,36.5 H72 A3.5,3.5 0 0 1 75.5,40 V44 A3.5,3.5 0 0 1 72,47.5 H68 A3.5,3.5 0 0 1 64.5,44 V40 A3.5,3.5 0 0 1 68,36.5 Z"
+            android:fillColor="#FFFFFFFF" />
+        <path
+            android:pathData="M60,54.5 H64 A3.5,3.5 0 0 1 67.5,58 V62 A3.5,3.5 0 0 1 64,65.5 H60 A3.5,3.5 0 0 1 56.5,62 V58 A3.5,3.5 0 0 1 60,54.5 Z"
+            android:fillColor="#FFFFFFFF" />
+        <path
+            android:pathData="M52,72.5 H56 A3.5,3.5 0 0 1 59.5,76 V80 A3.5,3.5 0 0 1 56,83.5 H52 A3.5,3.5 0 0 1 48.5,80 V76 A3.5,3.5 0 0 1 52,72.5 Z"
+            android:fillColor="#FFFFFFFF" />
+    </group>
+</vector>
