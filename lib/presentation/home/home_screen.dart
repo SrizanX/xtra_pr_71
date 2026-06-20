@@ -36,7 +36,11 @@ class HomeScreen extends StatelessWidget {
               case DashboardLoading():
                 return const Center(child: CircularProgressIndicator());
               case DashboardFailed():
-                return ErrorView(errorMessage: state.errorMessage);
+                return ErrorView(
+                  errorMessage: state.errorMessage,
+                  onRetry: () =>
+                      context.read<DashboardCubit>().fetchDashBoardData(),
+                );
               case DashboardSuccessful():
                 return _HomeBody(deviceInfo: state.deviceInfo);
             }

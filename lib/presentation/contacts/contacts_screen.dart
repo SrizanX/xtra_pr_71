@@ -24,8 +24,10 @@ class ContactsScreen extends StatelessWidget {
           builder: (context, state) {
             return switch (state) {
               ContactsLoading() => const CenteredProgressIndicator(),
-              ContactsFailed(:final errorMessage) =>
-                ErrorView(errorMessage: errorMessage),
+              ContactsFailed(:final errorMessage) => ErrorView(
+                errorMessage: errorMessage,
+                onRetry: () => context.read<ContactsCubit>().fetchContacts(),
+              ),
               ContactsSuccessful() => _Content(state: state),
             };
           },
