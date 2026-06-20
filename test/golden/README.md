@@ -7,7 +7,7 @@ headless via `flutter test`.
 ## Commands
 
 ```bash
-# Generate / refresh all screenshots
+# Generate / refresh all screenshots + the feature graphic
 flutter test test/golden --update-goldens
 
 # Verify they still match (no regeneration) — useful in CI
@@ -15,6 +15,13 @@ flutter test test/golden
 ```
 
 Output lands in `test/golden/goldens/<screen>_<formfactor>.png`.
+
+## Feature graphic
+
+`feature_graphic_test.dart` renders the 1024×500 Play Store feature graphic
+(`goldens/feature_graphic.png`) — the branded banner shown atop the listing.
+Edit `support/feature_graphic.dart` to change it. Upload under Play Console →
+Store listing → Graphics → Feature graphic.
 
 ## Output
 
