@@ -6,6 +6,8 @@ import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../domain/entity/system/time_status.dart';
 import '../../../domain/type.dart';
+import '../../demo/demo_data.dart';
+import '../../demo/demo_mode.dart';
 import '../mapper/base/result_mapper.dart';
 import '../mapper/state_response_mapper.dart';
 import '../model/state_response.dart';
@@ -19,6 +21,7 @@ class SystemSettingsApiService {
     required String oldPassword,
     required String newPassword,
   }) async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ok);
     final param = {"olapsd": oldPassword, "newpsd": newPassword};
     const url = "${ApiConfig.baseUrl}/modifyUser";
     final result = await NetworkClient().get(
@@ -30,6 +33,7 @@ class SystemSettingsApiService {
   /// Sets the time zone via `selecttimezone`. [value] is the timezone index
   /// from `kTimezones`.
   Future<Result<StateResponse>> setTimezone(String value) async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ok);
     final param = {"mySelect": value};
     const url = "${ApiConfig.baseUrl}/selecttimezone";
     final result = await NetworkClient().get(
@@ -41,6 +45,7 @@ class SystemSettingsApiService {
   /// Reads the current time status (auto time zone, clock, time-zone index)
   /// from `jsonp_usbstatus1`.
   Future<Result<TimeStatus>> fetchTimeStatus() async {
+    if (DemoMode.enabled) return Successful(data: DemoData.timeStatus);
     const url = "${ApiConfig.baseUrl}/jsonp_usbstatus1?callback=";
     final result = await NetworkClient().get(Uri.parse(url));
     switch (result) {
@@ -65,6 +70,9 @@ class SystemSettingsApiService {
   /// Flips automatic time zone on/off and returns the resulting state
   /// (`isAutoTimeZon`). The endpoint toggles on each call.
   Future<Result<bool>> toggleAutoTimeZone() async {
+    if (DemoMode.enabled) {
+      return Successful(data: !DemoData.timeStatus.isAutoTimezone);
+    }
     const url = "${ApiConfig.baseUrl}/jsonp_auto_time_zone?callback=";
     final result = await NetworkClient().get(Uri.parse(url));
     switch (result) {

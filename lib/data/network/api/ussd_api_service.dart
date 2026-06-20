@@ -4,6 +4,8 @@ import 'package:xtra_pr_71/data/network/network_client.dart';
 import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../domain/type.dart';
+import '../../demo/demo_data.dart';
+import '../../demo/demo_mode.dart';
 import '../model/state_response.dart';
 import 'api_config.dart';
 
@@ -13,6 +15,7 @@ import 'api_config.dart';
 ///    with the network's reply.
 class UssdApiService {
   Future<Result<StateResponse>> sendUssd(String code) async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ok);
     final param = {"ussdnumber": code};
     final uri = Uri.parse("${ApiConfig.baseUrl}/ussd?callback=")
         .replace(queryParameters: {'ussdparam': jsonEncode(param)});
@@ -27,6 +30,7 @@ class UssdApiService {
   }
 
   Future<Result<String>> fetchUssdResponse() async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ussdResponse);
     final uri = Uri.parse("${ApiConfig.baseUrl}/ussdback?callback=");
 
     final response = await NetworkClient().get(uri);

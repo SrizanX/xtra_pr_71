@@ -11,7 +11,7 @@ import '../components/surface_card.dart';
 import 'bloc/contacts_cubit.dart';
 import 'bloc/contacts_state.dart';
 
-/// SIM phonebook: list contacts, add new ones, and delete them.
+/// Router phonebook: list contacts, add new ones, and delete them.
 class ContactsScreen extends StatelessWidget {
   const ContactsScreen({super.key});
 
@@ -33,9 +33,15 @@ class ContactsScreen extends StatelessWidget {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddDialog(context),
-        child: const Icon(Icons.person_add_alt_1),
+      // Only offer "add" once the phonebook has loaded — hidden while loading
+      // or when the router is unreachable.
+      floatingActionButton: BlocBuilder<ContactsCubit, ContactsState>(
+        builder: (context, state) => state is ContactsSuccessful
+            ? FloatingActionButton(
+                onPressed: () => _showAddDialog(context),
+                child: const Icon(Icons.person_add_alt_1),
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }
@@ -82,7 +88,7 @@ class _Content extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.xs),
                   Text(
-                    '${contacts.length} on SIM',
+                    '${contacts.length} on the router',
                     style: textTheme.bodySmall?.copyWith(
                       color: AppColors.white.withValues(alpha: 0.5),
                     ),
@@ -124,7 +130,7 @@ class _Content extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxxl),
             child: Center(
               child: Text(
-                'No contacts on the SIM',
+                'No contacts saved on the router',
                 style: textTheme.bodyMedium?.copyWith(
                   color: AppColors.white.withValues(alpha: 0.5),
                 ),
@@ -216,7 +222,7 @@ class _ContactTile extends StatelessWidget {
       context: context,
       builder: (dialogContext) => AppAlertDialog(
         title: 'Delete contact?',
-        message: 'Remove ${contact.displayName} from the SIM?',
+        message: 'Remove ${contact.displayName} from the router?',
         confirmLabel: 'Delete',
         confirmIcon: Icons.delete_outline,
         isDestructive: true,

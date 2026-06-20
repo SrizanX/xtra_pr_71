@@ -3,7 +3,7 @@ description: "A controller for XTRA PR71 pocket router."
 
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
-version: 0.1.0-alpha.1+1
+version: 0.2.0-alpha+3
 
 environment:
   sdk: ^3.9.2

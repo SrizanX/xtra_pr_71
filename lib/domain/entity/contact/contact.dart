@@ -1,4 +1,4 @@
-/// A SIM/phonebook contact from the router's `ContactList` endpoint.
+/// A phonebook contact from the router's `ContactList` endpoint.
 ///
 /// The router is inconsistent: the read response uses `smsName` (name) and
 /// `phoneNumber` (phone), while the add request uses `content`/`pnumber`. Both

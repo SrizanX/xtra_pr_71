@@ -7,11 +7,14 @@ import 'package:xtra_pr_71/data/network/model/state_response.dart';
 import 'package:xtra_pr_71/domain/result.dart';
 
 import '../../../domain/entity/wireless/wireless_info.dart';
+import '../../demo/demo_data.dart';
+import '../../demo/demo_mode.dart';
 import '../network_client.dart';
 import 'api_config.dart';
 
 class WirelessSettingsApiService {
   Future<Result<WirelessInfo>> fetchWirelessSettings() async {
+    if (DemoMode.enabled) return Successful(data: DemoData.wireless);
     const url =
         "${ApiConfig.baseUrl}/jsonp_uapxb_wlan_security_settings?callback=";
     final result = await NetworkClient().get(Uri.parse(url));
@@ -26,6 +29,7 @@ class WirelessSettingsApiService {
     required double maxDeviceCount,
     int hideWifi = 0,
   }) async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ok);
     final param = {
       "username": wifiName,
       "password": password,

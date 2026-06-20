@@ -49,7 +49,8 @@ class SmsCubit extends Cubit<SmsState> {
     final first = await SmsApiService().fetchSms(1);
     if (isClosed || epoch != _epoch) return; // closed or superseded
     if (first is! Successful<SmsApiEntity>) {
-      emit(const SmsState.smsListFailed());
+      emit(SmsState.smsListFailed(
+          message: (first as Failed<SmsApiEntity>).message));
       return;
     }
 
@@ -85,7 +86,7 @@ class SmsCubit extends Cubit<SmsState> {
           ),
         );
       case Failed<SmsApiEntity>():
-        emit(const SmsState.smsListFailed());
+        emit(SmsState.smsListFailed(message: result.message));
     }
   }
 

@@ -88,3 +88,28 @@ class FakeUssdCubit extends UssdCubit {
     emit(UssdSuccess(response: sampleUssdResponse));
   }
 }
+
+// --- failed-state fakes (router unreachable) -------------------------------
+
+const _offline = 'Connection timeout';
+
+class FakeContactsFailedCubit extends ContactsCubit {
+  @override
+  void fetchContacts() => emit(ContactsFailed(errorMessage: _offline));
+}
+
+class FakeSmsFailedCubit extends SmsCubit {
+  @override
+  void fetchAllSms() => emit(const SmsState.smsListFailed(message: _offline));
+}
+
+class FakeApnFailedCubit extends ApnCubit {
+  @override
+  void fetchApnSettings() => emit(ApnFailed(errorMessage: _offline));
+}
+
+class FakeConnectedDevicesFailedCubit extends ConnectedDevicesCubit {
+  @override
+  void fetchConnectedDevices() =>
+      emit(ConnectedDevicesFailed(errorMessage: _offline));
+}

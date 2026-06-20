@@ -122,12 +122,12 @@ return smsListFailed(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( SmsApiEntity sms,  int loadedPage,  int totalPage)?  smsListSuccessful,TResult Function()?  smsListFailed,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function( SmsApiEntity sms,  int loadedPage,  int totalPage)?  smsListSuccessful,TResult Function( String message)?  smsListFailed,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Initial() when initial != null:
 return initial();case SmsListSuccessful() when smsListSuccessful != null:
 return smsListSuccessful(_that.sms,_that.loadedPage,_that.totalPage);case SmsListFailed() when smsListFailed != null:
-return smsListFailed();case _:
+return smsListFailed(_that.message);case _:
   return orElse();
 
 }
@@ -145,12 +145,12 @@ return smsListFailed();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( SmsApiEntity sms,  int loadedPage,  int totalPage)  smsListSuccessful,required TResult Function()  smsListFailed,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function( SmsApiEntity sms,  int loadedPage,  int totalPage)  smsListSuccessful,required TResult Function( String message)  smsListFailed,}) {final _that = this;
 switch (_that) {
 case Initial():
 return initial();case SmsListSuccessful():
 return smsListSuccessful(_that.sms,_that.loadedPage,_that.totalPage);case SmsListFailed():
-return smsListFailed();}
+return smsListFailed(_that.message);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -164,12 +164,12 @@ return smsListFailed();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( SmsApiEntity sms,  int loadedPage,  int totalPage)?  smsListSuccessful,TResult? Function()?  smsListFailed,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function( SmsApiEntity sms,  int loadedPage,  int totalPage)?  smsListSuccessful,TResult? Function( String message)?  smsListFailed,}) {final _that = this;
 switch (_that) {
 case Initial() when initial != null:
 return initial();case SmsListSuccessful() when smsListSuccessful != null:
 return smsListSuccessful(_that.sms,_that.loadedPage,_that.totalPage);case SmsListFailed() when smsListFailed != null:
-return smsListFailed();case _:
+return smsListFailed(_that.message);case _:
   return null;
 
 }
@@ -283,32 +283,66 @@ as int,
 
 
 class SmsListFailed implements SmsState {
-  const SmsListFailed();
+  const SmsListFailed({required this.message});
   
 
+ final  String message;
 
-
+/// Create a copy of SmsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SmsListFailedCopyWith<SmsListFailed> get copyWith => _$SmsListFailedCopyWithImpl<SmsListFailed>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SmsListFailed);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SmsListFailed&&(identical(other.message, message) || other.message == message));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,message);
 
 @override
 String toString() {
-  return 'SmsState.smsListFailed()';
+  return 'SmsState.smsListFailed(message: $message)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class $SmsListFailedCopyWith<$Res> implements $SmsStateCopyWith<$Res> {
+  factory $SmsListFailedCopyWith(SmsListFailed value, $Res Function(SmsListFailed) _then) = _$SmsListFailedCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
 
 
+
+
+}
+/// @nodoc
+class _$SmsListFailedCopyWithImpl<$Res>
+    implements $SmsListFailedCopyWith<$Res> {
+  _$SmsListFailedCopyWithImpl(this._self, this._then);
+
+  final SmsListFailed _self;
+  final $Res Function(SmsListFailed) _then;
+
+/// Create a copy of SmsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(SmsListFailed(
+message: null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
 
 // dart format on

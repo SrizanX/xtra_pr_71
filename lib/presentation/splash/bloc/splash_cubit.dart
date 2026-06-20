@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xtra_pr_71/data/demo/demo_mode.dart';
 import 'package:xtra_pr_71/data/network/api/login_api_service.dart';
 import 'package:xtra_pr_71/data/network/model/state_response.dart';
 import 'package:xtra_pr_71/data/shared_preferences/prefs_repository.dart';
@@ -12,6 +13,13 @@ class SplashCubit extends Cubit<SplashState> {
 
   void checkLoginStatus() async {
     if (PrefsRepository().isRememberMeEnabled) {
+      // Re-enter demo mode without a router if the demo account was remembered.
+      if (DemoMode.matches(
+          PrefsRepository().username, PrefsRepository().password)) {
+        DemoMode.enabled = true;
+        emit(const SplashState.loginSuccessful());
+        return;
+      }
       final result = await LoginApiService().callLoginAPi(
         username: PrefsRepository().username,
         password: PrefsRepository().password,

@@ -7,11 +7,14 @@ import 'package:xtra_pr_71/domain/result.dart';
 import '../../../domain/entity/internet/network_info.dart';
 import '../../../domain/type.dart';
 import '../../../domain/entity/network_mode.dart';
+import '../../demo/demo_data.dart';
+import '../../demo/demo_mode.dart';
 import '../network_client.dart';
 import 'api_config.dart';
 
 class InternetStateApiService {
   Future<Result<NetworkInfo>> getInternetState() async {
+    if (DemoMode.enabled) return Successful(data: DemoData.networkInfo);
     const url = "${ApiConfig.baseUrl}/jsonp_internetconn?callback=";
 
     var client = NetworkClient();
@@ -33,6 +36,7 @@ class InternetStateApiService {
     required bool isMobileDataEnabled,
     required bool isRoamingEnabled,
   }) async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ok);
     final param = {
       "type": networkMode.value,
       "roaming": isRoamingEnabled ? 1 : 0,

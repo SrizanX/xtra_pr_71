@@ -42,7 +42,10 @@ class HomeScreen extends StatelessWidget {
                       context.read<DashboardCubit>().fetchDashBoardData(),
                 );
               case DashboardSuccessful():
-                return _HomeBody(deviceInfo: state.deviceInfo);
+                return _HomeBody(
+                  deviceInfo: state.deviceInfo,
+                  connectivity: state.connectivity,
+                );
             }
           },
         ),
@@ -52,9 +55,10 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _HomeBody extends StatelessWidget {
-  const _HomeBody({required this.deviceInfo});
+  const _HomeBody({required this.deviceInfo, required this.connectivity});
 
   final DeviceInfo deviceInfo;
+  final DashboardConnectivity connectivity;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +75,7 @@ class _HomeBody extends StatelessWidget {
         children: [
           // Pinned header — stays put while the content below scrolls.
           const SizedBox(height: AppSpacing.sm),
-          _Header(deviceInfo: deviceInfo),
+          _Header(deviceInfo: deviceInfo, connectivity: connectivity),
           const SizedBox(height: AppSpacing.lg),
           Expanded(
             child: SingleChildScrollView(
@@ -152,14 +156,15 @@ class _HomeBody extends StatelessWidget {
 
 /// Title, online status and the quick-action chips (SMS / settings / power).
 class _Header extends StatelessWidget {
-  const _Header({required this.deviceInfo});
+  const _Header({required this.deviceInfo, required this.connectivity});
 
   final DeviceInfo deviceInfo;
+  final DashboardConnectivity connectivity;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final green = AppColors.greenAccent;
+    final status = _statusFor(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -180,16 +185,22 @@ class _Header extends StatelessWidget {
                     width: 7,
                     height: 7,
                     decoration: BoxDecoration(
-                      color: green,
+                      color: status.color,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: green, blurRadius: 8)],
+                      // Only the live, online dot glows; an offline/reconnecting
+                      // state should look muted, not lit.
+                      boxShadow: status.online
+                          ? [BoxShadow(color: status.color, blurRadius: 8)]
+                          : null,
                     ),
                   ),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
-                    _statusLabel(deviceInfo.functionTimes),
+                    status.label,
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withValues(alpha: 0.6),
+                      color: AppColors.white.withValues(
+                        alpha: status.online ? 0.6 : 0.85,
+                      ),
                     ),
                   ),
                 ],
@@ -213,8 +224,39 @@ class _Header extends StatelessWidget {
     );
   }
 
+  /// Resolves the status dot colour and label from the live connectivity.
+  ({Color color, String label, bool online}) _statusFor(BuildContext context) {
+    switch (connectivity) {
+      case DashboardConnectivity.online:
+        return (
+          color: AppColors.greenAccent,
+          label: _statusLabel(deviceInfo.functionTimes),
+          online: true,
+        );
+      case DashboardConnectivity.reconnecting:
+        return (
+          color: AppColors.amber,
+          label: 'Reconnecting…',
+          online: false,
+        );
+      case DashboardConnectivity.restarting:
+        return (
+          color: AppColors.amber,
+          label: 'Restarting…',
+          online: false,
+        );
+      case DashboardConnectivity.poweredOff:
+        return (
+          color: Theme.of(context).colorScheme.error,
+          label: 'Powered off',
+          online: false,
+        );
+    }
+  }
+
   void _confirmReboot(BuildContext context) {
     final homeCubit = context.read<HomeCubit>();
+    final dashboardCubit = context.read<DashboardCubit>();
     showDialog(
       context: context,
       builder: (dialogContext) => AppAlertDialog(
@@ -224,6 +266,8 @@ class _Header extends StatelessWidget {
         confirmIcon: Icons.restart_alt,
         onPositiveButtonClick: () {
           homeCubit.reboot();
+          // Reflect the outage right away instead of waiting for a poll to fail.
+          dashboardCubit.markRestarting();
           Navigator.pop(dialogContext);
         },
       ),
@@ -232,6 +276,7 @@ class _Header extends StatelessWidget {
 
   void _confirmPowerOff(BuildContext context) {
     final homeCubit = context.read<HomeCubit>();
+    final dashboardCubit = context.read<DashboardCubit>();
     showDialog(
       context: context,
       builder: (dialogContext) => AppAlertDialog(
@@ -243,6 +288,7 @@ class _Header extends StatelessWidget {
         isDestructive: true,
         onPositiveButtonClick: () {
           homeCubit.powerOff();
+          dashboardCubit.markPoweredOff();
           Navigator.pop(dialogContext);
         },
       ),

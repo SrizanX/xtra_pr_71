@@ -13,5 +13,6 @@ sealed class SmsState with _$SmsState {
     required int totalPage,
   }) = SmsListSuccessful;
 
-  const factory SmsState.smsListFailed() = SmsListFailed;
+  const factory SmsState.smsListFailed({required String message}) =
+      SmsListFailed;
 }

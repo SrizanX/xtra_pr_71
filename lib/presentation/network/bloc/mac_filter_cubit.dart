@@ -27,11 +27,10 @@ class MacFilterCubit extends Cubit<MacFilterState> {
           issim: result.data.issim,
         ));
       case Failed<MacFilter>():
-        emit(state.copyWith(
-          isReady: true,
-          isBusy: false,
-          message: result.message,
-        ));
+        // A load failure is surfaced by the screen's ErrorView (when the router
+        // is unreachable), so don't also raise a toast here. Toasts are reserved
+        // for user actions (block / unblock / apply).
+        emit(state.copyWith(isReady: true, isBusy: false));
     }
   }
 

@@ -27,7 +27,13 @@ final class ResultMapper {
           );
         }
       case Failed<NetworkModel>():
-        return Failed(message: result.message, exception: result.exception);
+        // Preserve the transport-level classification (unreachable / wrong
+        // device) so the UI can guide the user appropriately.
+        return Failed(
+          message: result.message,
+          exception: result.exception,
+          kind: result.kind,
+        );
     }
   }
 }

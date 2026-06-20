@@ -33,7 +33,7 @@ class LoginApiService {
           return const Failed(message: "Invalid Credential");
         }
       case Failed<StateResponse>():
-        return Failed(message: loginResult.message);
+        return Failed(message: loginResult.message, kind: loginResult.kind);
     }
   }
 }

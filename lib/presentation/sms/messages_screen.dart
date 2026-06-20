@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 
 import '../../design/design_system.dart';
 import '../../domain/entity/sms/sms.dart';
+import '../components/app_error_widget.dart';
 import '../components/centered_progress_indicator.dart';
 import '../components/surface_card.dart';
 import 'bloc/sms_cubit.dart';
@@ -77,17 +78,24 @@ class _MessagesScreenState extends State<MessagesScreen> {
           builder: (context, state) {
             return switch (state) {
               Initial() => const CenteredProgressIndicator(),
-              SmsListFailed() => const Center(
-                child: Text('Error loading messages'),
+              SmsListFailed(:final message) => ErrorView(
+                errorMessage: message,
+                onRetry: () => context.read<SmsCubit>().fetchAllSms(),
               ),
               SmsListSuccessful() => _buildContent(context, state),
             };
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _notSupported(context),
-        child: const Icon(Icons.edit),
+      // Compose is only meaningful once messages have loaded — hidden while
+      // loading or when the router is unreachable.
+      floatingActionButton: BlocBuilder<SmsCubit, SmsState>(
+        builder: (context, state) => state is SmsListSuccessful
+            ? FloatingActionButton(
+                onPressed: () => _notSupported(context),
+                child: const Icon(Icons.edit),
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }

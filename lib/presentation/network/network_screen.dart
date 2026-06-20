@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../design/design_system.dart';
 import '../../domain/entity/apn/apn_settings.dart';
 import '../../domain/entity/device/connected_device.dart';
+import '../components/app_error_widget.dart';
+import '../components/centered_progress_indicator.dart';
 import '../components/surface_card.dart';
 import '../devices/bloc/connected_devices_cubit.dart';
 import '../devices/bloc/connected_devices_state.dart';
@@ -33,24 +35,43 @@ class NetworkScreen extends StatelessWidget {
               ..hideCurrentSnackBar()
               ..showSnackBar(SnackBar(content: Text(state.message!)));
           },
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.sm,
-              AppSpacing.lg,
-              AppSpacing.xxxl,
-            ),
-            children: const [
-              _Header(),
-              SizedBox(height: AppSpacing.lg),
-              _ApnCard(),
-              SizedBox(height: AppSpacing.md),
-              _MacFilterCard(),
-              SizedBox(height: AppSpacing.md),
-              _ConnectedDevices(),
-              SizedBox(height: AppSpacing.md),
-              _BlockedDevices(),
-            ],
+          child: Builder(
+            builder: (context) {
+              final apn = context.watch<ApnCubit>().state;
+              final devices = context.watch<ConnectedDevicesCubit>().state;
+              // Match the other tabs' phases: a single centred spinner on the
+              // first load, then one consistent error when the router is
+              // unreachable (every section fails) — rather than a screen full of
+              // separate spinners / "failed" / "empty" messages.
+              if (apn is ApnLoading && devices is ConnectedDevicesLoading) {
+                return const CenteredProgressIndicator();
+              }
+              if (apn is ApnFailed && devices is ConnectedDevicesFailed) {
+                return ErrorView(
+                  errorMessage: devices.errorMessage,
+                  onRetry: () => _refreshAll(context),
+                );
+              }
+              return ListView(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                  AppSpacing.lg,
+                  AppSpacing.xxxl,
+                ),
+                children: const [
+                  _Header(),
+                  SizedBox(height: AppSpacing.lg),
+                  _ApnCard(),
+                  SizedBox(height: AppSpacing.md),
+                  _MacFilterCard(),
+                  SizedBox(height: AppSpacing.md),
+                  _ConnectedDevices(),
+                  SizedBox(height: AppSpacing.md),
+                  _BlockedDevices(),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -88,11 +109,7 @@ class _Header extends StatelessWidget {
         ),
         _SquareIconButton(
           icon: Icons.refresh,
-          onTap: () {
-            context.read<ConnectedDevicesCubit>().fetchConnectedDevices();
-            context.read<MacFilterCubit>().fetchMacFilter();
-            context.read<ApnCubit>().fetchApnSettings();
-          },
+          onTap: () => _refreshAll(context),
         ),
       ],
     );
@@ -372,6 +389,8 @@ class _ConnectedDevices extends StatelessWidget {
               ),
             ),
           )
+        else if (devicesState is ConnectedDevicesFailed)
+          _emptyText(context, "Couldn't load devices")
         else if (devices.isEmpty)
           _emptyText(context, 'No devices connected')
         else
@@ -580,6 +599,13 @@ class _SquareIconButton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Re-fetches every section of the Network tab (APN, MAC filter, devices).
+void _refreshAll(BuildContext context) {
+  context.read<ConnectedDevicesCubit>().fetchConnectedDevices();
+  context.read<MacFilterCubit>().fetchMacFilter();
+  context.read<ApnCubit>().fetchApnSettings();
 }
 
 Widget _divider() => Divider(

@@ -6,12 +6,15 @@ import 'package:xtra_pr_71/data/network/network_client.dart';
 import 'package:xtra_pr_71/domain/entity/internet/internet_allowance.dart';
 import 'package:xtra_pr_71/domain/result.dart';
 
+import '../../demo/demo_data.dart';
+import '../../demo/demo_mode.dart';
 import '../mapper/base/result_mapper.dart';
 import '../model/state_response.dart';
 import 'api_config.dart';
 
 class InternetAllowanceApiService {
   Future<Result<InternetAllowanceEntity>> fetchDataUsage() async {
+    if (DemoMode.enabled) return Successful(data: DemoData.allowance);
     const url = "${ApiConfig.baseUrl}/jsonp_datausagestatus?callback=";
     final result = await NetworkClient().get(Uri.parse(url));
     return ResultMapper().map(result: result, mapper: AllowanceApiMapper());
@@ -21,6 +24,7 @@ class InternetAllowanceApiService {
       {required bool isUsageLimitEnabled,
       required num allowance,
       required AllowanceUnit allowanceUnit}) async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ok);
     final param = {
       "dataLimit": isUsageLimitEnabled,
       "settingData": allowance * allowanceUnit.multiplier,

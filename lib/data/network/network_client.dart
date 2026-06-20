@@ -9,15 +9,28 @@ import 'package:xtra_pr_71/domain/result.dart';
 class NetworkClient {
   final int _timeoutDuration = 5;
 
+  /// Hard cap on a response body. The router's JSONP/XML replies are a few KB;
+  /// anything far bigger means we're talking to something that isn't the PR71
+  /// (e.g. a different router's full HTML admin page). Parsing such a payload
+  /// runs synchronously on the UI isolate and can freeze the app (ANR), so we
+  /// reject it up front instead of handing it to a mapper.
+  static const int _maxResponseBytes = 1024 * 1024; // 1 MB
+
   const NetworkClient._();
 
   static const NetworkClient instance = NetworkClient._();
 
   factory NetworkClient() => instance;
 
+  /// Test-only override for the underlying HTTP client (e.g. an `http`
+  /// `MockClient`). Production uses a one-shot [http.get] that closes itself.
+  @visibleForTesting
+  static http.Client? testClient;
+
   Future<Result<String>> get(Uri uri) {
     return _handleHttpResponse(
-      () => http.get(uri).timeout(Duration(seconds: _timeoutDuration)),
+      () => (testClient?.get(uri) ?? http.get(uri))
+          .timeout(Duration(seconds: _timeoutDuration)),
     );
   }
 
@@ -26,43 +39,55 @@ class NetworkClient {
     try {
       final response = await request();
       _logResponse(response);
-      if (response.statusCode >= 200 && response.statusCode < 300) {
+      final code = response.statusCode;
+      if (code >= 200 && code < 300) {
+        // An oversized body means we're not talking to a PR71 (e.g. a different
+        // router's HTML admin page). Reject it before it reaches the XML/JSON
+        // parsers on the UI isolate, which would otherwise risk an ANR.
+        if (response.bodyBytes.length > _maxResponseBytes) {
+          return _fail(NetworkFailure.wrongDevice);
+        }
         return Successful(data: response.body);
-      } else {
-        return Failed(message: _getHttpStatusMessage(response.statusCode));
       }
+      // 401/403: something is at this address but it isn't the PR71 (commonly a
+      // different router). Other codes are unexpected server errors.
+      if (code == 401 || code == 403) return _fail(NetworkFailure.wrongDevice);
+      return _fail(
+        NetworkFailure.unknown,
+        message: "The router returned an error (HTTP $code).",
+      );
     } on SocketException catch (e) {
-      return Failed(message: "Connection failed", exception: e);
+      // No route / connection refused / network unreachable → not connected to
+      // the router (Wi-Fi off, switched network, or router down).
+      return _fail(NetworkFailure.unreachable, exception: e);
     } on TimeoutException catch (e) {
-      return Failed(message: "Connection timeout", exception: e);
+      return _fail(NetworkFailure.unreachable, exception: e);
+    } on http.ClientException catch (e) {
+      return _fail(NetworkFailure.unreachable, exception: e);
     } on Exception catch (e) {
-      return Failed(message: "Something went wrong", exception: e);
+      return _fail(NetworkFailure.unknown, exception: e);
     }
   }
 
-  String _getHttpStatusMessage(int statusCode) {
-    switch (statusCode) {
-      case 401:
-        return "401: May be you are connected to a different router";
-
-      case 403:
-        return "403: May be you are connected to a different router";
-
-      default:
-        return "Unknown error occurred!";
-    }
-  }
+  Failed<String> _fail(
+    NetworkFailure kind, {
+    String? message,
+    Exception? exception,
+  }) =>
+      Failed(message: message ?? kind.message, kind: kind, exception: exception);
 
   void _logResponse(http.Response response) {
-    if (kDebugMode) {
-      debugPrint('Request Body: ${response.request}');
-      if (response.request is http.Request) {
-        final bodyBytes = (response.request as http.Request).bodyBytes;
-        final bodyString = utf8.decode(bodyBytes);
-        debugPrint('Body: $bodyString');
-      }
-      debugPrint('Status Code: ${response.statusCode}');
-      debugPrint('Response Body: ${response.body}');
-    }
+    if (!kDebugMode) return;
+    debugPrint('Request: ${response.request}');
+    debugPrint('Status Code: ${response.statusCode}');
+    // Only log a short preview — debugPrint throttles output, so dumping a
+    // large foreign-router HTML page here is itself slow enough to jank the UI.
+    final bytes = response.bodyBytes;
+    final preview = utf8.decode(
+      bytes.length > 1000 ? bytes.sublist(0, 1000) : bytes,
+      allowMalformed: true,
+    );
+    final suffix = bytes.length > 1000 ? '… (${bytes.length} bytes)' : '';
+    debugPrint('Response Body: $preview$suffix');
   }
 }
