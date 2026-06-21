@@ -69,6 +69,8 @@ class LoginScreen extends StatelessWidget {
                 _StaySignedInRow(loginCubit: loginCubit),
                 const SizedBox(height: AppSpacing.lg),
                 BlocConsumer<LoginCubit, LoginState>(
+                  listenWhen: (previous, current) =>
+                      previous.loginApiState != current.loginApiState,
                   listener: (context, state) {
                     if (state.loginApiState is LoginSuccessful) {
                       context.go(HomeRoute.route);
