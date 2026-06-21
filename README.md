@@ -1,86 +1,76 @@
-# XTRA PR71 Router Controller (Open Source) | ⚠️ Alpha v0.1.0
+# XTRA PR71 Router Controller (Open Source) | Alpha v0.2.0
 
-An open-source mobile application built with Flutter to control and manage XTRA PR71 pocket routers. This project is not affiliated with, endorsed by, or connected to the manufacturers of XTRA PR71 devices.
+![XTRA PR71 Router Companion](screenshots/feature_graphic.png)
 
-## ⚠️ Alpha Version Notice
+An open-source Flutter app to control and manage XTRA PR71 pocket routers. This project is not affiliated with, endorsed by, or connected to the manufacturers of XTRA PR71 devices.
 
-This project is currently in **ALPHA** state (v0.1.0-alpha.1). Features may be incomplete, unstable, or subject to change. Use with caution and please report any issues you encounter.
+## Alpha Version Notice
+
+This project is currently in **ALPHA** state (`v0.2.0-alpha`). Features may be incomplete, unstable, or subject to change. Please report any issues you encounter.
 
 ## Features
 
 - **Router Control**: Power off, restart, and reset your router remotely
-- **Connection Management**: View and manage data connections
-- **SMS Management**: Read and send SMS messages
-- **User Authentication**: Secure login to protect your router access
-- **Settings Configuration**: Customize router settings
+- **Connection Management**: Enable/disable mobile data and monitor connection status
+- **SMS Management**: Read and send SMS messages through your router's SIM card
+- **Secure Login**: Credentials stored locally on-device — never sent to external servers
+- **Settings Configuration**: Customize router settings from the app
 
 ## Screenshots
 
-| Login                                     | Home (Data Disabled)                                                  | Home (Data Enabled)                                                 |
-| ----------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| ![Login Screen](screenshots/01_login.png) | ![Home Screen - Data Disabled](screenshots/02_home_data_disabled.png) | ![Home Screen - Data Enabled](screenshots/03_home_data_enabled.png) |
+| Login | Home | Network |
+| --- | --- | --- |
+| ![Login](screenshots/login_phone.png) | ![Home](screenshots/home_phone.png) | ![Network](screenshots/network_phone.png) |
 
-| SMS                                   | Settings                                        |
-| ------------------------------------- | ----------------------------------------------- |
-| ![SMS Screen](screenshots/04_sms.png) | ![Settings Screen](screenshots/05_settings.png) |
-
-## Legal Notice
-
-XTRA PR71 is a trademark of its respective owner. This application is an independent open-source project created to provide additional functionality for users of XTRA PR71 pocket routers. We are not affiliated with the manufacturer of XTRA PR71 devices.
+| Messages | Contacts | USSD |
+| --- | --- | --- |
+| ![Messages](screenshots/messages_phone.png) | ![Contacts](screenshots/contacts_phone.png) | ![USSD](screenshots/ussd_phone.png) |
 
 ## Getting Started
 
 ### For Users
 
-#### Installation
-
-1. Download the app from [Google Play Store](https://play.google.com/store/apps/details?id=com.srizan.xtra_pr_71) (coming soon)
-2. Install the app on your Android device
-3. Connect your device to the same network as your XTRA PR71 router
+1. Download the APK from [GitHub Releases](https://github.com/srizanx/xtra_pr_71/releases)
+2. Install on your Android device (Android 6.0 / Marshmallow or higher)
+3. Connect your device to the same Wi-Fi network as your XTRA PR71 router
 4. Launch the app and enter your router's login credentials
-
-#### System Requirements
-
-- Android 6.0 (Marshmallow) or higher
-- Access to an XTRA PR71 pocket router
-- Local network connection to your router
 
 ### For Developers
 
-### Prerequisites
+**Prerequisites**
 
 - Flutter SDK 3.5.4 or higher
-- Android Studio / VS Code with Flutter plugins
+- Android Studio or VS Code with Flutter plugins
 
-### Installation
+**Setup**
 
-1. Clone this repository
-2. Install dependencies:
-   ```bash
-   flutter pub get
-   ```
-3. Run the app:
-   ```bash
-   flutter run
-   ```
+```bash
+git clone https://github.com/srizanx/xtra_pr_71.git
+cd xtra_pr_71
+flutter pub get
+flutter run
+```
 
 ## Technology Stack
 
-- Flutter
-- Bloc for state management
-- Freezed for immutable data models
-- Shared Preferences for local storage
+- **Flutter** — cross-platform UI framework
+- **Bloc** — state management
+- **Freezed** — immutable data models
+- **Shared Preferences** — local credential storage
 
 ## Development Status
 
-The current version (0.1.0-alpha.1) is an early release with the following limitations:
+Current version: `0.2.0-alpha`
 
 - Some features may be incomplete or unstable
-- The UI might undergo significant changes
-- Regular updates are expected as development progresses
+- The UI may undergo significant changes between releases
 - Backwards compatibility is not guaranteed between alpha versions
 
-We welcome feedback, bug reports, and contributions to help improve the application.
+Bug reports, feature requests, and pull requests are welcome. For major changes please open an issue first.
+
+## Legal Notice
+
+XTRA PR71 is a trademark of its respective owner. This application is an independent open-source project and is not affiliated with the manufacturer of XTRA PR71 devices.
 
 ## Contributing
 
@@ -88,4 +78,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License — see the LICENSE file for details.
