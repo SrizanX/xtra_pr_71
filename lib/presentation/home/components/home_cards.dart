@@ -33,6 +33,7 @@ class GaugeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return SurfaceCard(
       borderRadius: AppRadius.lg,
       padding: const EdgeInsets.symmetric(
@@ -72,7 +73,7 @@ class GaugeCard extends StatelessWidget {
             subtitle,
             textAlign: TextAlign.center,
             style: textTheme.bodySmall?.copyWith(
-              color: AppColors.white.withValues(alpha: 0.45),
+              color: onSurface.withValues(alpha: 0.45),
             ),
           ),
         ],
@@ -99,6 +100,7 @@ class StatTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     final card = SurfaceCard(
       borderRadius: AppRadius.md + 2,
       child: Column(
@@ -114,7 +116,7 @@ class StatTile extends StatelessWidget {
           Text(
             label,
             style: textTheme.bodySmall?.copyWith(
-              color: AppColors.white.withValues(alpha: 0.45),
+              color: onSurface.withValues(alpha: 0.45),
             ),
           ),
         ],
@@ -168,6 +170,7 @@ class ToggleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     final accentColor = accent;
     return GestureDetector(
       onLongPress: onLongPress ?? onEdit,
@@ -176,7 +179,7 @@ class ToggleCard extends StatelessWidget {
             ? null
             : [
                 accentColor.withValues(alpha: 0.12),
-                AppColors.white.withValues(alpha: 0.04),
+                onSurface.withValues(alpha: 0.04),
               ],
         borderColor: accentColor?.withValues(alpha: 0.22),
         child: Column(
@@ -202,8 +205,7 @@ class ToggleCard extends StatelessWidget {
                         subtitle,
                         style: textTheme.bodySmall?.copyWith(
                           color: subtitleColor ??
-                              AppColors.white
-                                  .withValues(alpha: 0.45),
+                              onSurface.withValues(alpha: 0.45),
                           fontWeight:
                               subtitleColor != null ? FontWeight.w600 : null,
                         ),
@@ -219,7 +221,7 @@ class ToggleCard extends StatelessWidget {
                     icon: Icon(
                       Icons.edit_outlined,
                       size: 18,
-                      color: AppColors.white.withValues(alpha: 0.6),
+                      color: onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 Switch(value: value, onChanged: onChanged),
@@ -230,7 +232,7 @@ class ToggleCard extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 child: Divider(
                   height: 1,
-                  color: AppColors.white.withValues(alpha: 0.08),
+                  color: onSurface.withValues(alpha: 0.08),
                 ),
               ),
               footer!,
@@ -263,12 +265,13 @@ class InlineToggleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Row(
       children: [
         Icon(
           icon,
           size: 20,
-          color: AppColors.white.withValues(alpha: 0.7),
+          color: onSurface.withValues(alpha: 0.7),
         ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
@@ -284,7 +287,7 @@ class InlineToggleRow extends StatelessWidget {
               Text(
                 subtitle,
                 style: textTheme.bodySmall?.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.45),
+                  color: onSurface.withValues(alpha: 0.45),
                 ),
               ),
             ],
@@ -316,6 +319,7 @@ class NetworkModeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     final accentColor = accent ?? AppColors.blue500;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -325,13 +329,13 @@ class NetworkModeSelector extends StatelessWidget {
             Icon(
               Icons.network_cell,
               size: 16,
-              color: AppColors.white.withValues(alpha: 0.6),
+              color: onSurface.withValues(alpha: 0.6),
             ),
             const SizedBox(width: AppSpacing.xs),
             Text(
               'Network mode',
               style: textTheme.bodySmall?.copyWith(
-                color: AppColors.white.withValues(alpha: 0.6),
+                color: onSurface.withValues(alpha: 0.6),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -343,7 +347,7 @@ class NetworkModeSelector extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.all(AppSpacing.xxs),
             decoration: BoxDecoration(
-              color: AppColors.white.withValues(alpha: 0.05),
+              color: onSurface.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(AppRadius.md),
             ),
             child: Row(
@@ -382,8 +386,8 @@ class _NetworkSegment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final selectedColor =
-        isSelected ? accent : AppColors.white.withValues(alpha: 0.7);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final selectedColor = isSelected ? accent : onSurface.withValues(alpha: 0.7);
     return Tooltip(
       message: mode.label,
       child: InkWell(
@@ -426,12 +430,13 @@ class _IconChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = accent ?? AppColors.white.withValues(alpha: 0.7);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final color = accent ?? onSurface.withValues(alpha: 0.7);
     return Container(
       width: 46,
       height: 46,
       decoration: BoxDecoration(
-        color: (accent ?? AppColors.white)
+        color: (accent ?? onSurface)
             .withValues(alpha: accent == null ? 0.06 : 0.16),
         borderRadius: BorderRadius.circular(AppRadius.md + 2),
       ),
@@ -456,7 +461,7 @@ class DataUsageBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final muted = AppColors.white.withValues(alpha: 0.5);
+    final muted = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5);
     final fraction =
         limitBytes <= 0 ? 0.0 : (usedBytes / limitBytes).clamp(0.0, 1.0);
     final remaining =
@@ -490,7 +495,8 @@ class DataUsageBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: fraction,
             minHeight: 8,
-            backgroundColor: AppColors.white.withValues(alpha: 0.1),
+            backgroundColor:
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
             valueColor: AlwaysStoppedAnimation(barColor),
           ),
         ),

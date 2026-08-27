@@ -24,20 +24,19 @@ class SurfaceCard extends StatelessWidget {
   /// default faint white fill is used.
   final List<Color>? gradientColors;
 
-  /// Optional accent border. Defaults to the hairline white border.
+  /// Optional accent border. Defaults to the hairline border.
   final Color? borderColor;
-
-  static Color get _fill => AppColors.white.withValues(alpha: 0.045);
-  static Color get _border =>
-      AppColors.white.withValues(alpha: 0.07);
 
   @override
   Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final fill = onSurface.withValues(alpha: 0.045);
+    final border = onSurface.withValues(alpha: 0.07);
     final gradient = gradientColors;
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: gradient == null ? _fill : null,
+        color: gradient == null ? fill : null,
         gradient: gradient == null
             ? null
             : LinearGradient(
@@ -45,10 +44,14 @@ class SurfaceCard extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: gradient,
               ),
-        border: Border.all(color: borderColor ?? _border),
+        border: Border.all(color: borderColor ?? border),
         borderRadius: BorderRadius.circular(borderRadius),
       ),
-      child: child,
+      // A plain translucent Container has a background color but no Material
+      // ancestor of its own, so any ListTile/InkWell inside it paints splashes
+      // onto the Scaffold's Material underneath — hidden behind this fill.
+      // A transparent Material here gives them the right surface to paint on.
+      child: Material(type: MaterialType.transparency, child: child),
     );
   }
 }

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 
-/// Brand and accent palette — the single source of raw color values.
+/// Brand accent palette — the single source of raw color values.
 ///
-/// Prefer the semantic roles on `Theme.of(context).colorScheme` where one fits;
-/// reach for these for brand accents, gauges and decorative fills that don't map
-/// cleanly onto a Material color role. Opacity variants are applied at the call
-/// site with `.withValues(alpha: …)`.
+/// These are theme-independent (used the same in light and dark) for brand
+/// accents, gauges and decorative fills that don't map onto a Material color
+/// role. For anything that should flip with the theme — body text, icons,
+/// surfaces, borders — use `Theme.of(context).colorScheme` instead; see
+/// `presentation/app/theme.dart` for the light/dark ColorScheme definitions.
+/// Opacity variants are applied at the call site with `.withValues(alpha: …)`.
 abstract final class AppColors {
-  /// Base text / icon color on the app's dark surfaces.
-  static const Color white = Colors.white;
-
   /// Primary brand blue.
   static const Color blue500 = Color(0xff5492f7);
 
@@ -24,7 +23,4 @@ abstract final class AppColors {
 
   /// Red accent — danger zones (e.g. the top of a speed gauge).
   static const Color danger = Color(0xffff5a5a);
-
-  /// App background and card surface (dark navy).
-  static const Color darkBlue = Color.fromRGBO(41, 43, 68, 1.0);
 }

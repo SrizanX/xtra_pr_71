@@ -53,9 +53,10 @@ void installScreenshotEnvironment() {
   PrefsRepository().speedRefreshMs.value = 1000;
 }
 
-final ThemeData _theme = app_theme.theme.copyWith(
-  textTheme: app_theme.theme.textTheme.apply(fontFamily: 'Roboto'),
-  primaryTextTheme: app_theme.theme.primaryTextTheme.apply(fontFamily: 'Roboto'),
+final ThemeData _theme = app_theme.darkTheme.copyWith(
+  textTheme: app_theme.darkTheme.textTheme.apply(fontFamily: 'Roboto'),
+  primaryTextTheme:
+      app_theme.darkTheme.primaryTextTheme.apply(fontFamily: 'Roboto'),
 );
 
 Widget _wrap(Widget child) => MaterialApp(

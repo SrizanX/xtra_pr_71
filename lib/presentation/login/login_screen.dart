@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
+import '../../data/shared_preferences/prefs_repository.dart';
 import '../../design/design_system.dart';
 import '../../l10n/app_localizations.dart';
 import '../home/home_route.dart';
@@ -13,115 +13,320 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loginCubit = context.read<LoginCubit>();
-    final l10n = AppLocalizations.of(context)!;
-    final dimens = AppDimensions.of(context);
     return Scaffold(
-      // Keep this true
+      // Lets the fixed button footer ride up to sit right above the keyboard.
       resizeToAvoidBottomInset: true,
-      body: SafeArea(
-        child: ResponsiveCenter(
-          maxWidth: 460,
-          padding: EdgeInsets.all(dimens.screenPadding),
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start, // Change to start
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Push the content down without pinning it to the very top.
-                SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                _BrandHero(iconSize: dimens.heroIconSize),
-                const SizedBox(height: AppSpacing.xl),
-                Text(
-                  'Welcome back',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                Text(
-                  'Sign in to manage your router',
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.white.withValues(alpha: 0.6),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xxl),
-                _LoginField(
-                  label: l10n.adminUsername,
-                  icon: Icons.person_outline,
-                  initialValue: loginCubit.state.username,
-                  textInputAction: TextInputAction.next,
-                  onChanged: loginCubit.onUsernameChange,
-                ),
-                const SizedBox(height: AppSpacing.lg),
-                _LoginField(
-                  label: l10n.adminPassword,
-                  icon: Icons.lock_outline,
-                  obscurable: true,
-                  initialValue: loginCubit.state.password,
-                  textInputAction: TextInputAction.done,
-                  onChanged: loginCubit.onPasswordChange,
-                  onSubmitted: (_) => loginCubit.login(),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                _StaySignedInRow(loginCubit: loginCubit),
-                const SizedBox(height: AppSpacing.lg),
-                BlocConsumer<LoginCubit, LoginState>(
-                  listenWhen: (previous, current) =>
-                      previous.loginApiState != current.loginApiState,
-                  listener: (context, state) {
-                    if (state.loginApiState is LoginSuccessful) {
-                      context.go(HomeRoute.route);
-                    }
+      body: Stack(
+        children: [
+          // Bottom inset handled explicitly on the footer below, not by
+          // SafeArea, so the button gap is derived from the live insets.
+          SafeArea(
+            bottom: false,
+            // LayoutBuilder is the core responsive primitive: it hands us the
+            // actual space this screen gets, so the layout decision is made
+            // from real constraints rather than a guessed device class. A wide,
+            // landscape-ish viewport (landscape phone or a tablet on its side)
+            // splits into two panes; everything else keeps the stacked column.
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final twoPane = constraints.maxWidth >= 600 &&
+                    constraints.maxWidth > constraints.maxHeight;
+                return twoPane
+                    ? const _WideLayout()
+                    : const _NarrowLayout();
+              },
+            ),
+          ),
+          const SafeArea(
+            child: Align(
+              alignment: Alignment.topRight,
+              child: Padding(
+                padding: EdgeInsets.all(AppSpacing.md),
+                child: _ThemeToggleButton(),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-                    if (state.loginApiState is LoginFailed) {
-                      final errorMessage =
-                          (state.loginApiState as LoginFailed).message;
-                      Fluttertoast.showToast(msg: errorMessage);
-                    }
-                  },
-                  builder: (context, state) {
-                    final isLoading = state.loginApiState is LoginInProgress;
-                    return SizedBox(
-                      height: 52,
-                      child: FilledButton(
-                        onPressed: isLoading ? null : loginCubit.login,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: AppColors.blue500,
-                          foregroundColor: AppColors.white,
-                          disabledBackgroundColor:
-                              AppColors.blue500.withValues(alpha: 0.5),
-                          // Derive from the theme (rather than a bare TextStyle)
-                          // so the font family resolves consistently.
-                          textStyle: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontSize: 16, fontWeight: FontWeight.w700),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(AppRadius.md),
-                          ),
-                        ),
-                        child: isLoading
-                            ? const SizedBox(
-                                width: 22,
-                                height: 22,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2.4,
-                                  valueColor: AlwaysStoppedAnimation(
-                                    AppColors.white,
-                                  ),
-                                ),
-                              )
-                            : Text(l10n.login),
-                      ),
-                    );
-                  },
+/// Portrait / phone layout: brand, heading and fields scroll together as one
+/// region while the CTA stays pinned above the keyboard.
+class _NarrowLayout extends StatelessWidget {
+  const _NarrowLayout();
+
+  @override
+  Widget build(BuildContext context) {
+    final dimens = AppDimensions.of(context);
+    // Derive the bottom clearance from MediaQuery rather than a magic number.
+    // `padding.bottom` is the safe area still *exposed*: it equals the gesture
+    // bar / home-indicator inset when the keyboard is down, and collapses to 0
+    // once the keyboard covers it — so the pinned footer keeps one consistent
+    // gap above whichever of the two is currently there.
+    final mq = MediaQuery.of(context);
+    final exposedSafeBottom = mq.padding.bottom;
+    return ResponsiveCenter(
+      maxWidth: 460,
+      padding: EdgeInsets.fromLTRB(
+        dimens.screenPadding,
+        dimens.screenPadding,
+        dimens.screenPadding,
+        dimens.screenPadding + exposedSafeBottom,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Logo, heading and fields scroll together as one region. The logo
+          // always stays put and simply scrolls up when the keyboard leaves
+          // little room — no appearing/disappearing — while the button below
+          // stays pinned above the keyboard.
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Breathing room above the logo, proportional to the screen;
+                  // scrolls off when space is tight.
+                  SizedBox(height: mq.size.height * 0.08),
+                  _BrandHero(iconSize: dimens.heroIconSize),
+                  const SizedBox(height: AppSpacing.xl),
+                  const _Heading(),
+                  const SizedBox(height: AppSpacing.xxl),
+                  const _Fields(),
+                ],
+              ),
+            ),
+          ),
+          // Pinned CTA footer: outside the scroll view, so the Scaffold lifts
+          // it to sit right above the keyboard when it's open.
+          const SizedBox(height: AppSpacing.lg),
+          const _SubmitButton(),
+        ],
+      ),
+    );
+  }
+}
+
+/// Wide / landscape layout: a brand pane beside the form pane, so the content
+/// fills the space instead of stranding a narrow column in an empty screen and
+/// the form isn't crushed under the keyboard in landscape. Each pane is
+/// independently scrollable and vertically centered.
+class _WideLayout extends StatelessWidget {
+  const _WideLayout();
+
+  @override
+  Widget build(BuildContext context) {
+    final dimens = AppDimensions.of(context);
+    final mq = MediaQuery.of(context);
+    final exposedSafeBottom = mq.padding.bottom;
+    return Row(
+      children: [
+        // Brand pane — the hero + heading, centered in its half.
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.all(dimens.screenPadding),
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _BrandHero(iconSize: dimens.heroIconSize),
+                    const SizedBox(height: AppSpacing.xl),
+                    const _Heading(),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
+        // Form pane — fields scroll, CTA pinned at the bottom of the pane.
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(
+              dimens.screenPadding,
+              dimens.screenPadding,
+              dimens.screenPadding,
+              dimens.screenPadding + exposedSafeBottom,
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Flexible(
+                      child: SingleChildScrollView(
+                        child: const _Fields(),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    const _SubmitButton(),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// "Welcome back" title + subtitle, shared by both layouts.
+class _Heading extends StatelessWidget {
+  const _Heading();
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      children: [
+        Text(
+          'Welcome back',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+              ),
+        ),
+        const SizedBox(height: AppSpacing.xs),
+        Text(
+          'Sign in to manage your router',
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurface.withValues(alpha: 0.6),
+              ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Username + password fields and the "stay signed in" row, shared by both
+/// layouts. Reads the [LoginCubit] provided above the route.
+class _Fields extends StatelessWidget {
+  const _Fields();
+
+  @override
+  Widget build(BuildContext context) {
+    final loginCubit = context.read<LoginCubit>();
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _LoginField(
+          label: l10n.adminUsername,
+          icon: Icons.person_outline,
+          initialValue: loginCubit.state.username,
+          textInputAction: TextInputAction.next,
+          onChanged: loginCubit.onUsernameChange,
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        _LoginField(
+          label: l10n.adminPassword,
+          icon: Icons.lock_outline,
+          obscurable: true,
+          initialValue: loginCubit.state.password,
+          textInputAction: TextInputAction.done,
+          onChanged: loginCubit.onPasswordChange,
+          onSubmitted: (_) => loginCubit.login(),
+        ),
+        const SizedBox(height: AppSpacing.md),
+        _StaySignedInRow(loginCubit: loginCubit),
+      ],
+    );
+  }
+}
+
+/// The primary sign-in button. Navigates home on success and surfaces failures
+/// as a snackbar; shows a spinner while the request is in flight.
+class _SubmitButton extends StatelessWidget {
+  const _SubmitButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final loginCubit = context.read<LoginCubit>();
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    return BlocConsumer<LoginCubit, LoginState>(
+      listenWhen: (previous, current) =>
+          previous.loginApiState != current.loginApiState,
+      listener: (context, state) {
+        if (state.loginApiState is LoginSuccessful) {
+          context.go(HomeRoute.route);
+        }
+
+        if (state.loginApiState is LoginFailed) {
+          final errorMessage = (state.loginApiState as LoginFailed).message;
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(errorMessage)));
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state.loginApiState is LoginInProgress;
+        return SizedBox(
+          height: 52,
+          child: FilledButton(
+            onPressed: isLoading ? null : loginCubit.login,
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.blue500,
+              foregroundColor: colorScheme.onPrimary,
+              disabledBackgroundColor: AppColors.blue500.withValues(alpha: 0.5),
+              // Derive from the theme (rather than a bare TextStyle) so the
+              // font family resolves consistently.
+              textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+            ),
+            child: isLoading
+                ? SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.4,
+                      valueColor: AlwaysStoppedAnimation(
+                        colorScheme.onPrimary,
+                      ),
+                    ),
+                  )
+                : Text(l10n.login),
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// Quick light/dark toggle in the corner of the login screen — sits ahead of
+/// authentication, so it flips the explicit theme mode directly rather than
+/// opening Settings, using the currently *effective* brightness (so it still
+/// does the right thing when the user is on System).
+class _ThemeToggleButton extends StatelessWidget {
+  const _ThemeToggleButton();
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return IconButton(
+      tooltip: isDark ? 'Switch to light theme' : 'Switch to dark theme',
+      onPressed: () => PrefsRepository().setThemeMode(
+        isDark ? ThemeMode.light : ThemeMode.dark,
+      ),
+      style: IconButton.styleFrom(
+        backgroundColor: onSurface.withValues(alpha: 0.06),
+        shape: const CircleBorder(),
+      ),
+      icon: Icon(
+        isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+        color: onSurface.withValues(alpha: 0.75),
       ),
     );
   }
@@ -197,7 +402,8 @@ class _LoginFieldState extends State<_LoginField> {
 
   @override
   Widget build(BuildContext context) {
-    final muted = AppColors.white.withValues(alpha: 0.5);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final muted = onSurface.withValues(alpha: 0.5);
     OutlineInputBorder border(Color color, [double width = 1]) =>
         OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
@@ -229,9 +435,9 @@ class _LoginFieldState extends State<_LoginField> {
               )
             : null,
         filled: true,
-        fillColor: AppColors.white.withValues(alpha: 0.045),
-        border: border(AppColors.white.withValues(alpha: 0.07)),
-        enabledBorder: border(AppColors.white.withValues(alpha: 0.07)),
+        fillColor: onSurface.withValues(alpha: 0.045),
+        border: border(onSurface.withValues(alpha: 0.07)),
+        enabledBorder: border(onSurface.withValues(alpha: 0.07)),
         focusedBorder: border(AppColors.blue500, 1.4),
       ),
     );
@@ -265,7 +471,9 @@ class _StaySignedInRow extends StatelessWidget {
                 Text(
                   AppLocalizations.of(context)!.stayLoggedIn,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.white.withValues(alpha: 0.8),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.8),
                   ),
                 ),
               ],

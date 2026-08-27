@@ -65,6 +65,7 @@ class _Content extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     final contacts = state.contacts;
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -90,7 +91,7 @@ class _Content extends StatelessWidget {
                   Text(
                     '${contacts.length} on the router',
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withValues(alpha: 0.5),
+                      color: onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -112,13 +113,13 @@ class _Content extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.white.withValues(alpha: 0.06),
+                  color: onSurface.withValues(alpha: 0.06),
                   borderRadius: BorderRadius.circular(AppRadius.md + 2),
                 ),
                 child: Icon(
                   Icons.refresh,
                   size: 21,
-                  color: AppColors.white.withValues(alpha: 0.7),
+                  color: onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ),
@@ -132,7 +133,7 @@ class _Content extends StatelessWidget {
               child: Text(
                 'No contacts saved on the router',
                 style: textTheme.bodyMedium?.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.5),
+                  color: onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ),
@@ -148,7 +149,7 @@ class _Content extends StatelessWidget {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: AppColors.white.withValues(alpha: 0.06),
+                      color: onSurface.withValues(alpha: 0.06),
                     ),
                   _ContactTile(contact: contacts[i]),
                 ],
@@ -168,6 +169,7 @@ class _ContactTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -195,7 +197,7 @@ class _ContactTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withValues(alpha: 0.5),
+                      color: onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -207,7 +209,7 @@ class _ContactTile extends StatelessWidget {
             onPressed: () => _confirmDelete(context),
             icon: Icon(
               Icons.delete_outline,
-              color: AppColors.white.withValues(alpha: 0.6),
+              color: onSurface.withValues(alpha: 0.6),
             ),
           ),
         ],

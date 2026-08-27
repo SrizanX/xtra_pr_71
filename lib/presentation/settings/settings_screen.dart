@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../data/shared_preferences/prefs_repository.dart';
 import '../../design/design_system.dart';
 import '../components/surface_card.dart';
+import 'items/account_settings.dart';
+import 'items/appearance_settings.dart';
 import 'items/refresh_rate/refresh_rate_setting.dart';
 import 'items/system_settings.dart';
 import 'items/wifi_settings/wifi_settings_tile.dart';
@@ -18,6 +20,9 @@ class SettingsScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.all(dimens.screenPadding),
           children: const [
+            _SectionLabel("Appearance"),
+            SurfaceCard(child: AppearanceSettings()),
+            SizedBox(height: AppSpacing.lg),
             _SectionLabel("Connection"),
             SurfaceCard(
               padding: EdgeInsets.symmetric(
@@ -32,6 +37,9 @@ class SettingsScreen extends StatelessWidget {
             SizedBox(height: AppSpacing.lg),
             _SectionLabel("System"),
             SurfaceCard(child: SystemSettings()),
+            SizedBox(height: AppSpacing.lg),
+            _SectionLabel("Account"),
+            SurfaceCard(child: AccountSettings()),
             SizedBox(height: AppSpacing.lg),
           ],
         ),
@@ -58,7 +66,7 @@ class _SectionLabel extends StatelessWidget {
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w700,
               letterSpacing: 1.3,
-              color: AppColors.white.withValues(alpha: 0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
       ),
     );
@@ -104,7 +112,7 @@ class _RefreshRates extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
           child: Divider(
             height: 1,
-            color: AppColors.white.withValues(alpha: 0.08),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
           ),
         ),
         RefreshRateSetting(

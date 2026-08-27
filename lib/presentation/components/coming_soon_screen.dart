@@ -18,6 +18,7 @@ class ComingSoonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -27,7 +28,7 @@ class ComingSoonScreen extends StatelessWidget {
               Icon(
                 icon,
                 size: 56,
-                color: AppColors.white.withValues(alpha: 0.3),
+                color: onSurface.withValues(alpha: 0.3),
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
@@ -38,7 +39,7 @@ class ComingSoonScreen extends StatelessWidget {
               Text(
                 'Coming soon',
                 style: textTheme.bodyMedium?.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.5),
+                  color: onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ],

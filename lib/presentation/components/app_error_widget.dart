@@ -14,6 +14,7 @@ class ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -45,7 +46,7 @@ class ErrorView extends StatelessWidget {
               errorMessage,
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(
-                color: AppColors.white.withValues(alpha: 0.6),
+                color: onSurface.withValues(alpha: 0.6),
               ),
             ),
             if (onRetry != null) ...[

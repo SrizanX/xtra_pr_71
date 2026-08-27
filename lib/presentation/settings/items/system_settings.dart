@@ -25,7 +25,7 @@ class SystemSettings extends StatelessWidget {
           subtitle: const Text('Change the router login password'),
           trailing: Icon(
             Icons.chevron_right,
-            color: AppColors.white.withValues(alpha: 0.4),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
           ),
           onTap: () => showDialog<void>(
             context: context,
@@ -34,7 +34,7 @@ class SystemSettings extends StatelessWidget {
         ),
         Divider(
           height: 1,
-          color: AppColors.white.withValues(alpha: 0.08),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,
@@ -43,7 +43,7 @@ class SystemSettings extends StatelessWidget {
           subtitle: const Text('Set the router clock'),
           trailing: Icon(
             Icons.chevron_right,
-            color: AppColors.white.withValues(alpha: 0.4),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
           ),
           onTap: () => showDialog<void>(
             context: context,
@@ -52,7 +52,7 @@ class SystemSettings extends StatelessWidget {
         ),
         Divider(
           height: 1,
-          color: AppColors.white.withValues(alpha: 0.08),
+          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
         ),
         ListTile(
           contentPadding: EdgeInsets.zero,

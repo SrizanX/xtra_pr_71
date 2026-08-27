@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show ThemeMode;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsRepository {
@@ -17,12 +18,26 @@ class PrefsRepository {
   final ValueNotifier<int> dashboardRefreshMs =
       ValueNotifier(defaultDashboardRefreshMs);
 
+  /// Light / dark / system appearance, exposed the same way as the refresh
+  /// rates so MaterialApp picks up a change from Settings immediately.
+  final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.system);
+
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     speedRefreshMs.value =
         _prefs?.getInt("speedRefreshMs") ?? defaultSpeedRefreshMs;
     dashboardRefreshMs.value =
         _prefs?.getInt("dashboardRefreshMs") ?? defaultDashboardRefreshMs;
+    final storedThemeMode = _prefs?.getString("themeMode");
+    themeMode.value = ThemeMode.values.firstWhere(
+      (mode) => mode.name == storedThemeMode,
+      orElse: () => ThemeMode.system,
+    );
+  }
+
+  void setThemeMode(ThemeMode mode) {
+    _prefs?.setString("themeMode", mode.name);
+    themeMode.value = mode;
   }
 
   void setSpeedRefreshMs(int value) {
@@ -55,5 +70,12 @@ class PrefsRepository {
 
   set password(String value) {
     _prefs?.setString("password", value);
+  }
+
+  /// Forgets the remembered session so the next launch lands back on Login.
+  Future<void> clearCredentials() async {
+    await _prefs?.remove("rememberMe");
+    await _prefs?.remove("username");
+    await _prefs?.remove("password");
   }
 }

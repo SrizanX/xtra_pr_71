@@ -28,6 +28,7 @@ class SpeedGauge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final clamped = value.clamp(0.0, maxValue);
+    final colorScheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: size,
       height: size * 0.78,
@@ -40,7 +41,11 @@ class SpeedGauge extends StatelessWidget {
             painter: _SpeedGaugePainter(
               value: animated,
               maxValue: maxValue,
-              trackColor: AppColors.white.withValues(alpha: 0.08),
+              trackColor: colorScheme.onSurface.withValues(alpha: 0.08),
+              majorTickColor: colorScheme.onSurface.withValues(alpha: 0.55),
+              minorTickColor: colorScheme.onSurface.withValues(alpha: 0.25),
+              hubColor: colorScheme.surface,
+              hubDotColor: colorScheme.onSurface,
             ),
             child: _Readout(value: value, unit: unit),
           );
@@ -59,6 +64,7 @@ class _Readout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     final text = value >= 100
         ? value.toStringAsFixed(0)
         : value.toStringAsFixed(1);
@@ -84,7 +90,7 @@ class _Readout extends StatelessWidget {
               fontSize: 13,
               fontWeight: FontWeight.w700,
               letterSpacing: 2,
-              color: AppColors.white.withValues(alpha: 0.5),
+              color: onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -98,11 +104,19 @@ class _SpeedGaugePainter extends CustomPainter {
     required this.value,
     required this.maxValue,
     required this.trackColor,
+    required this.majorTickColor,
+    required this.minorTickColor,
+    required this.hubColor,
+    required this.hubDotColor,
   });
 
   final double value;
   final double maxValue;
   final Color trackColor;
+  final Color majorTickColor;
+  final Color minorTickColor;
+  final Color hubColor;
+  final Color hubDotColor;
 
   // Sweep geometry: a 270° arc with a 90° gap at the bottom.
   static const double _startAngle = math.pi * 0.75; // 135°, lower-left
@@ -153,11 +167,11 @@ class _SpeedGaugePainter extends CustomPainter {
   void _paintTicks(Canvas canvas, Offset center, double radius) {
     const majorCount = 10; // 10 segments → 11 ticks
     final major = Paint()
-      ..color = AppColors.white.withValues(alpha: 0.55)
+      ..color = majorTickColor
       ..strokeWidth = 2.5
       ..strokeCap = StrokeCap.round;
     final minor = Paint()
-      ..color = AppColors.white.withValues(alpha: 0.25)
+      ..color = minorTickColor
       ..strokeWidth = 1.2;
     final tickRadius = radius - 12;
 
@@ -206,8 +220,7 @@ class _SpeedGaugePainter extends CustomPainter {
     );
 
     // Hub.
-    canvas.drawCircle(
-        center, 9, Paint()..color = AppColors.darkBlue);
+    canvas.drawCircle(center, 9, Paint()..color = hubColor);
     canvas.drawCircle(
       center,
       9,
@@ -216,8 +229,7 @@ class _SpeedGaugePainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = 3,
     );
-    canvas.drawCircle(
-        center, 3, Paint()..color = AppColors.white);
+    canvas.drawCircle(center, 3, Paint()..color = hubDotColor);
   }
 
   @override

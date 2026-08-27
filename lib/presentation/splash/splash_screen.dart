@@ -64,7 +64,8 @@ class SplashScreen extends StatelessWidget {
                 child: CircularProgressIndicator(
                   strokeWidth: 2.4,
                   valueColor: AlwaysStoppedAnimation(
-                    AppColors.white.withValues(alpha: 0.7),
+                    Theme.of(context).colorScheme.onSurface
+                        .withValues(alpha: 0.7),
                   ),
                 ),
               ),

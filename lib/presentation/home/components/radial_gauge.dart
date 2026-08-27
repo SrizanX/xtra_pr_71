@@ -35,7 +35,8 @@ class RadialGauge extends StatelessWidget {
         painter: _GaugePainter(
           progress: progress.clamp(0.0, 1.0),
           color: color,
-          trackColor: AppColors.white.withValues(alpha: 0.08),
+          trackColor: Theme.of(context).colorScheme.onSurface
+              .withValues(alpha: 0.08),
           strokeWidth: strokeWidth,
         ),
         child: Center(child: center),

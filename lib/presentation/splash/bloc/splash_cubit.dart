@@ -17,6 +17,7 @@ class SplashCubit extends Cubit<SplashState> {
       if (DemoMode.matches(
           PrefsRepository().username, PrefsRepository().password)) {
         DemoMode.enabled = true;
+        await Future<void>.delayed(Duration.zero);
         emit(const SplashState.loginSuccessful());
         return;
       }

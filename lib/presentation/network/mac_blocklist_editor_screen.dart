@@ -114,7 +114,7 @@ class _MacBlocklistEditorScreenState extends State<MacBlocklistEditorScreen> {
                     'Up to ${MacFilter.maxEntries} addresses.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color:
-                              AppColors.white.withValues(alpha: 0.55),
+                              Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
                         ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
@@ -175,7 +175,7 @@ class _MacBlocklistEditorScreenState extends State<MacBlocklistEditorScreen> {
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                    color: AppColors.white.withValues(alpha: 0.08),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.08),
                   ),
                 ),
               ),

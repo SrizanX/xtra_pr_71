@@ -10,9 +10,12 @@ import '../../domain/entity/sms/sms.dart';
 import '../components/app_error_widget.dart';
 import '../components/centered_progress_indicator.dart';
 import '../components/surface_card.dart';
+import 'bloc/send_sms_cubit.dart';
+import 'bloc/send_sms_state.dart';
 import 'bloc/sms_cubit.dart';
 import 'bloc/sms_state.dart';
 import 'conversation_screen.dart';
+import 'sms_validation.dart';
 
 /// SMS inbox styled per the PR71 design: messages grouped into conversations
 /// by phone number, with an Inbox / Sent filter.
@@ -25,7 +28,6 @@ class MessagesScreen extends StatefulWidget {
 
 class _MessagesScreenState extends State<MessagesScreen> {
   /// false = Inbox (received), true = Sent.
-  bool _showSent = false;
 
   final _scrollController = ScrollController();
 
@@ -92,7 +94,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
       floatingActionButton: BlocBuilder<SmsCubit, SmsState>(
         builder: (context, state) => state is SmsListSuccessful
             ? FloatingActionButton(
-                onPressed: () => _notSupported(context),
+                onPressed: () => _openCompose(context),
                 child: const Icon(Icons.edit),
               )
             : const SizedBox.shrink(),
@@ -125,25 +127,16 @@ class _MessagesScreenState extends State<MessagesScreen> {
           onUssd: () => context.push('/messages/ussd'),
         ),
         const SizedBox(height: AppSpacing.lg),
-        _InboxSentToggle(
-          // Count conversations (threads), matching the rows shown below —
-          // not raw messages, which would over-count grouped numbers.
-          inboxCount: _threadCount(byNumber, sent: false),
-          sentCount: _threadCount(byNumber, sent: true),
-          // Counts are still climbing while pages load in the background.
-          isLoading: hasMore,
-          showSent: _showSent,
-          onChanged: (sent) => setState(() => _showSent = sent),
-        ),
-        const SizedBox(height: AppSpacing.md),
+        // Inbox/Sent toggle is hidden until sent-message caching lands; the
+        // router only returns received messages, so we show those for now.
         if (threads.isEmpty)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxxl),
             child: Center(
               child: Text(
-                _showSent ? 'No sent messages' : 'No messages',
+                'No messages',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ),
@@ -159,7 +152,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                     Divider(
                       height: 1,
                       thickness: 1,
-                      color: AppColors.white.withValues(alpha: 0.06),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.06),
                     ),
                   _ThreadTile(
                     thread: threads[i],
@@ -184,12 +177,12 @@ class _MessagesScreenState extends State<MessagesScreen> {
     );
   }
 
-  /// Threads for the active tab: only messages of the selected direction,
-  /// grouped by number, newest first.
+  /// Received-message threads, grouped by number, newest first. (Sent messages
+  /// are not persisted yet, so only the inbox is shown — see the hidden toggle.)
   List<_Thread> _threadsForTab(Map<String, List<Sms>> byNumber) {
     final threads = <_Thread>[];
     byNumber.forEach((number, all) {
-      final inTab = all.where((m) => m.isSent == _showSent).toList();
+      final inTab = all.where((m) => !m.isSent).toList();
       if (inTab.isEmpty) return;
       inTab.sort(_byDateDesc);
       threads.add(_Thread(phoneNumber: number, latest: inTab.first));
@@ -197,11 +190,6 @@ class _MessagesScreenState extends State<MessagesScreen> {
     threads.sort((a, b) => _byDateDesc(a.latest, b.latest));
     return threads;
   }
-
-  /// Number of conversations that contain at least one message in the given
-  /// direction — i.e. how many tiles that tab shows.
-  int _threadCount(Map<String, List<Sms>> byNumber, {required bool sent}) =>
-      byNumber.values.where((all) => all.any((m) => m.isSent == sent)).length;
 
   Map<String, List<Sms>> _groupByNumber(List<Sms> messages) {
     final map = <String, List<Sms>>{};
@@ -211,14 +199,159 @@ class _MessagesScreenState extends State<MessagesScreen> {
     return map;
   }
 
-  void _notSupported(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sending SMS isn\'t supported on this device yet.'),
+  /// Opens the "new message" composer as a modal bottom sheet. Its own
+  /// [SendSmsCubit] drives the send; on success the inbox is reloaded so the
+  /// new message appears in a thread.
+  void _openCompose(BuildContext context) {
+    final smsCubit = context.read<SmsCubit>();
+    showModalBottomSheet(
+      context: context,
+      // Lets the sheet grow and ride above the keyboard.
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (_) => BlocProvider(
+        create: (_) => SendSmsCubit(),
+        child: _ComposeSheet(onSent: smsCubit.fetchAllSms),
       ),
     );
   }
+}
 
+/// A "new message" composer bottom sheet: a recipient number, the message body,
+/// and a send button that reflects the two-step send progress. Closes on
+/// success.
+class _ComposeSheet extends StatefulWidget {
+  const _ComposeSheet({required this.onSent});
+
+  /// Called after a message is confirmed sent (used to reload the inbox).
+  final VoidCallback onSent;
+
+  @override
+  State<_ComposeSheet> createState() => _ComposeSheetState();
+}
+
+class _ComposeSheetState extends State<_ComposeSheet> {
+  final _number = TextEditingController();
+  final _message = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _number.addListener(() => setState(() {}));
+    _message.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _number.dispose();
+    _message.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<SendSmsCubit, SendSmsState>(
+      listener: (context, state) {
+        if (state is SendSmsSuccess) {
+          widget.onSent();
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Message sent to ${state.number}')),
+          );
+        } else if (state is SendSmsFailure) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(state.message)));
+          context.read<SendSmsCubit>().reset();
+        }
+      },
+      builder: (context, state) {
+        final sending = state is SendSmsInProgress;
+        // Only surface the number error once the user has typed something, so
+        // the field doesn't start out red.
+        final numberError = _number.text.trim().isEmpty
+            ? null
+            : validateBdPhone(_number.text);
+        final canSend = !sending &&
+            isValidBdPhone(_number.text) &&
+            _message.text.trim().isNotEmpty;
+        return Padding(
+          // Lift the sheet above the keyboard.
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.viewInsetsOf(context).bottom,
+          ),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.lg,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'New message',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  TextField(
+                    controller: _number,
+                    enabled: !sending,
+                    keyboardType: TextInputType.phone,
+                    textInputAction: TextInputAction.next,
+                    decoration: InputDecoration(
+                      labelText: 'To',
+                      prefixIcon: const Icon(Icons.person_outline),
+                      errorText: numberError,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                  TextField(
+                    controller: _message,
+                    enabled: !sending,
+                    minLines: 1,
+                    maxLines: 4,
+                    maxLength: smsMaxLength,
+                    decoration: const InputDecoration(
+                      labelText: 'Message',
+                      hintText: 'Type a message',
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  SizedBox(
+                    height: 50,
+                    child: FilledButton.icon(
+                      onPressed: canSend
+                          ? () => context
+                              .read<SendSmsCubit>()
+                              .send(_number.text, _message.text)
+                          : null,
+                      icon: sending
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child:
+                                  CircularProgressIndicator(strokeWidth: 2.2),
+                            )
+                          : const Icon(Icons.send, size: 18),
+                      label: Text(sending ? state.status : 'Send'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
 }
 
 int _byDateDesc(Sms a, Sms b) {
@@ -260,7 +393,7 @@ class _Header extends StatelessWidget {
               Text(
                 'SIM storage · $total ${total == 1 ? 'message' : 'messages'}',
                 style: textTheme.bodySmall?.copyWith(
-                  color: AppColors.white.withValues(alpha: 0.5),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                 ),
               ),
             ],
@@ -273,13 +406,13 @@ class _Header extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: AppColors.white.withValues(alpha: 0.06),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.06),
               borderRadius: BorderRadius.circular(AppRadius.md + 2),
             ),
             child: Icon(
               Icons.refresh,
               size: 21,
-              color: AppColors.white.withValues(alpha: 0.7),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ),
@@ -323,7 +456,7 @@ class _QuickAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final color = accent ?? AppColors.white.withValues(alpha: 0.7);
+    final color = accent ?? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadius.md + 2),
@@ -337,7 +470,7 @@ class _QuickAction extends StatelessWidget {
             ? null
             : [
                 accent!.withValues(alpha: 0.1),
-                AppColors.white.withValues(alpha: 0.04),
+                Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.04),
               ],
         borderColor: accent?.withValues(alpha: 0.22),
         child: Row(
@@ -356,118 +489,12 @@ class _QuickAction extends StatelessWidget {
                 Text(
                   subtitle,
                   style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.white.withValues(alpha: 0.45),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.45),
                   ),
                 ),
               ],
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _InboxSentToggle extends StatelessWidget {
-  const _InboxSentToggle({
-    required this.inboxCount,
-    required this.sentCount,
-    required this.isLoading,
-    required this.showSent,
-    required this.onChanged,
-  });
-
-  final int inboxCount;
-  final int sentCount;
-  final bool isLoading;
-  final bool showSent;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpacing.xs + 1),
-      decoration: BoxDecoration(
-        color: AppColors.white.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(AppRadius.md + 3),
-      ),
-      child: Row(
-        children: [
-          _segment(
-            'Inbox',
-            inboxCount,
-            selected: !showSent,
-            onTap: () => onChanged(false),
-          ),
-          _segment(
-            'Sent',
-            sentCount,
-            selected: showSent,
-            onTap: () => onChanged(true),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _segment(
-    String label,
-    int count, {
-    required bool selected,
-    required VoidCallback onTap,
-  }) {
-    final textColor = selected
-        ? AppColors.white
-        : AppColors.white.withValues(alpha: 0.55);
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm + 1),
-          decoration: BoxDecoration(
-            color: selected
-                ? AppColors.blue500
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(AppRadius.md - 1),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text.rich(
-                TextSpan(
-                  text: label,
-                  children: [
-                    TextSpan(
-                      text: '  $count',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.white.withValues(
-                          alpha: selected ? 0.85 : 0.5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: textColor,
-                ),
-              ),
-              // While more pages load, the count is still climbing.
-              if (isLoading) ...[
-                const SizedBox(width: AppSpacing.sm),
-                SizedBox(
-                  width: 11,
-                  height: 11,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 1.6,
-                    color: textColor,
-                  ),
-                ),
-              ],
-            ],
-          ),
         ),
       ),
     );
@@ -535,7 +562,7 @@ class _ThreadTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withValues(alpha: 0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],

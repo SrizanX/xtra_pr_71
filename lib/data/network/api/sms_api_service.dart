@@ -22,6 +22,32 @@ class SmsApiService {
         .map(result: result, mapper: SmsListResponseMapper());
   }
 
+  /// Two-step send, mirroring USSD:
+  /// 1. [sendSms] submits the message and returns `{"state": 1}` once the
+  ///    router has *accepted* it for sending (not yet delivered).
+  /// 2. After a short wait, [checkSentMessage] returns `{"state": 1}` when the
+  ///    message was actually sent, or another value on failure.
+  Future<Result<StateResponse>> sendSms(String number, String content) async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ok);
+    final param = {"pnumber": number, "content": content};
+    const url = "${ApiConfig.baseUrl}/PostMessageList";
+    final result = await NetworkClient().get(
+      Uri.parse(url).replace(
+        queryParameters: {"MessageList": jsonEncode(param)},
+      ),
+    );
+    return ResultMapper().map(result: result, mapper: StateApiMapper());
+  }
+
+  /// Reads the outcome of the most recent [sendSms] via `messageback`.
+  /// `{"state": 1}` means delivered; anything else means it failed.
+  Future<Result<StateResponse>> checkSentMessage() async {
+    if (DemoMode.enabled) return Successful(data: DemoData.ok);
+    const url = "${ApiConfig.baseUrl}/messageback";
+    final result = await NetworkClient().get(Uri.parse(url));
+    return ResultMapper().map(result: result, mapper: StateApiMapper());
+  }
+
   /// Deletes the given messages via `DeleteList`. Each entry is identified by
   /// its `messageid` and the page it lives on (`curpage`).
   Future<Result<StateResponse>> deleteMessages(List<Sms> messages) async {

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:xtra_pr_71/design/design_system.dart';
 
+/// Fixed dark navy + white, independent of the app's light/dark theme — this
+/// is a static Play Store marketing asset, not themed UI.
+const _navy = Color.fromRGBO(41, 43, 68, 1.0);
+const _white = Colors.white;
+
 /// Play Store feature graphic (1024×500): brand wordmark + tagline + feature
-/// pills on the left, the glowing router hero on the right, over the app's dark
-/// navy with a blue glow — consistent with the login/splash hero.
+/// pills on the left, the glowing router hero on the right, over a dark navy
+/// with a blue glow — consistent with the login/splash hero.
 class FeatureGraphic extends StatelessWidget {
   const FeatureGraphic({super.key});
 
@@ -18,7 +23,7 @@ class FeatureGraphic extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xff343859), AppColors.darkBlue],
+            colors: [Color(0xff343859), _navy],
           ),
         ),
         child: Stack(
@@ -79,7 +84,7 @@ class _LeftBlock extends StatelessWidget {
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
                 letterSpacing: 2.5,
-                color: AppColors.white.withValues(alpha: 0.55),
+                color: _white.withValues(alpha: 0.55),
               ),
             ),
           ],
@@ -91,7 +96,7 @@ class _LeftBlock extends StatelessWidget {
             fontSize: 66,
             fontWeight: FontWeight.w800,
             height: 1.0,
-            color: AppColors.white,
+            color: _white,
             letterSpacing: -0.5,
           ),
         ),
@@ -101,7 +106,7 @@ class _LeftBlock extends StatelessWidget {
           style: TextStyle(
             fontSize: 23,
             fontWeight: FontWeight.w500,
-            color: AppColors.white.withValues(alpha: 0.7),
+            color: _white.withValues(alpha: 0.7),
           ),
         ),
         const SizedBox(height: 28),
@@ -145,7 +150,7 @@ class _Pill extends StatelessWidget {
             style: TextStyle(
               fontSize: 15.5,
               fontWeight: FontWeight.w600,
-              color: AppColors.white.withValues(alpha: 0.92),
+              color: _white.withValues(alpha: 0.92),
             ),
           ),
         ],
@@ -192,7 +197,7 @@ class _HeroArt extends StatelessWidget {
                 ),
               ],
             ),
-            child: const Icon(Icons.router, size: 92, color: AppColors.white),
+            child: const Icon(Icons.router, size: 92, color: _white),
           ),
         ],
       ),

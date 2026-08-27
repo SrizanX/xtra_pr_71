@@ -8,6 +8,7 @@ import '../login/login_route.dart';
 import '../network/network_route.dart';
 import 'main_shell.dart';
 import '../settings/settings_route.dart';
+import '../sms/bloc/send_sms_cubit.dart';
 import '../sms/bloc/sms_cubit.dart';
 import '../sms/conversation_screen.dart';
 import '../sms/messages_screen.dart';
@@ -72,7 +73,10 @@ final router = GoRouter(
             body: Center(child: Text('Conversation not found')),
           );
         }
-        return ConversationScreen(args: args);
+        return BlocProvider(
+          create: (_) => SendSmsCubit(),
+          child: ConversationScreen(args: args),
+        );
       },
     ),
   ],

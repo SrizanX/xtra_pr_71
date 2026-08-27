@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../design/design_system.dart';
 import '../../domain/entity/sms/sms.dart';
+import 'bloc/send_sms_cubit.dart';
+import 'bloc/send_sms_state.dart';
 import 'messages_screen.dart' show formatSmsTime;
+import 'sms_validation.dart';
 
 /// Arguments passed to [ConversationScreen] via the router's `extra`.
 class ConversationArgs {
@@ -15,8 +19,9 @@ class ConversationArgs {
 
 /// A single SMS thread rendered as a chat conversation.
 ///
-/// Read-only: the router exposes no send endpoint, so the composer is present
-/// for fidelity but surfaces a "not supported" notice instead of sending.
+/// Replies are sent through [SendSmsCubit] (the router's two-step send). A
+/// confirmed message is appended to the thread optimistically so it appears
+/// immediately, without waiting for the next full inbox reload.
 class ConversationScreen extends StatefulWidget {
   const ConversationScreen({super.key, required this.args});
 
@@ -31,6 +36,10 @@ class ConversationScreen extends StatefulWidget {
 class _ConversationScreenState extends State<ConversationScreen> {
   final _controller = TextEditingController();
 
+  /// Messages sent from this screen, kept locally so a confirmed send shows in
+  /// the thread right away (the inbox is only re-fetched on the Messages tab).
+  final _sent = <Sms>[];
+
   @override
   void initState() {
     super.initState();
@@ -43,9 +52,41 @@ class _ConversationScreenState extends State<ConversationScreen> {
     super.dispose();
   }
 
+  void _send(BuildContext context) {
+    final text = _controller.text.trim();
+    if (text.isEmpty) return;
+    context.read<SendSmsCubit>().send(widget.args.phoneNumber, text);
+  }
+
+  void _onSendResult(BuildContext context, SendSmsState state) {
+    if (state is SendSmsSuccess) {
+      setState(() => _sent.add(_optimisticSms(state.number, state.content)));
+      _controller.clear();
+      context.read<SendSmsCubit>().reset();
+    } else if (state is SendSmsFailure) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text(state.message)));
+      context.read<SendSmsCubit>().reset();
+    }
+  }
+
+  /// A locally-built "sent" message for immediate display. `smstype: '2'` marks
+  /// it as outgoing (see [SmsDirection.isSent]); the negative id keeps it from
+  /// colliding with real router message ids.
+  Sms _optimisticSms(String number, String content) => Sms(
+        smsContent: content,
+        phoneNumber: number,
+        smsDate: DateTime.now().toIso8601String(),
+        messageid: -DateTime.now().millisecondsSinceEpoch,
+        classid: 0,
+        singleCount: '1',
+        smstype: '2',
+      );
+
   @override
   Widget build(BuildContext context) {
-    final messages = [...widget.args.messages]
+    final messages = [...widget.args.messages, ..._sent]
       ..sort((a, b) => (a.sentAt ?? DateTime(0)).compareTo(b.sentAt ?? DateTime(0)));
     final items = _withDateSeparators(messages);
 
@@ -71,9 +112,13 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 },
               ),
             ),
-            _Composer(
-              controller: _controller,
-              onSend: () => _notSupported(context),
+            BlocConsumer<SendSmsCubit, SendSmsState>(
+              listener: _onSendResult,
+              builder: (context, state) => _Composer(
+                controller: _controller,
+                isSending: state is SendSmsInProgress,
+                onSend: () => _send(context),
+              ),
             ),
           ],
         ),
@@ -107,14 +152,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
     if (diff == 1) return 'Yesterday';
     return DateFormat('d MMMM y').format(day);
   }
-
-  void _notSupported(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Sending SMS isn\'t supported on this device yet.'),
-      ),
-    );
-  }
 }
 
 class _ConversationHeader extends StatelessWidget {
@@ -125,6 +162,7 @@ class _ConversationHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.sm,
@@ -135,7 +173,7 @@ class _ConversationHeader extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
-            color: AppColors.white.withValues(alpha: 0.06),
+            color: onSurface.withValues(alpha: 0.06),
           ),
         ),
       ),
@@ -144,7 +182,7 @@ class _ConversationHeader extends StatelessWidget {
           IconButton(
             onPressed: () => Navigator.of(context).maybePop(),
             icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-            color: AppColors.white.withValues(alpha: 0.7),
+            color: onSurface.withValues(alpha: 0.7),
           ),
           Container(
             width: 40,
@@ -193,7 +231,8 @@ class _DaySeparator extends StatelessWidget {
           style: TextStyle(
             fontSize: 11,
             fontWeight: FontWeight.w600,
-            color: AppColors.white.withValues(alpha: 0.35),
+            color: Theme.of(context).colorScheme.onSurface
+                .withValues(alpha: 0.35),
           ),
         ),
       ),
@@ -209,6 +248,11 @@ class _Bubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isSent = sms.isSent;
+    final colorScheme = Theme.of(context).colorScheme;
+    // The sent bubble is always a solid blue fill, so its text/time need the
+    // fixed on-primary color; the received bubble tints with the surface, so
+    // its text/time need to track onSurface to stay legible in both themes.
+    final bubbleTextColor = isSent ? colorScheme.onPrimary : colorScheme.onSurface;
     final time = formatSmsTime(sms.sentAt);
     const tail = Radius.circular(5);
     final radius = isSent
@@ -239,7 +283,7 @@ class _Bubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSent
               ? AppColors.blue500
-              : AppColors.white.withValues(alpha: 0.07),
+              : colorScheme.onSurface.withValues(alpha: 0.07),
           borderRadius: radius,
         ),
         child: Column(
@@ -250,7 +294,7 @@ class _Bubble extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 height: 1.4,
-                color: AppColors.white,
+                color: bubbleTextColor,
               ),
             ),
             const SizedBox(height: AppSpacing.xs + 1),
@@ -258,8 +302,7 @@ class _Bubble extends StatelessWidget {
               isSent ? '$time · Sent' : time,
               style: TextStyle(
                 fontSize: 10,
-                color: AppColors.white
-                    .withValues(alpha: isSent ? 0.7 : 0.4),
+                color: bubbleTextColor.withValues(alpha: isSent ? 0.7 : 0.4),
               ),
             ),
           ],
@@ -270,15 +313,22 @@ class _Bubble extends StatelessWidget {
 }
 
 class _Composer extends StatelessWidget {
-  const _Composer({required this.controller, required this.onSend});
+  const _Composer({
+    required this.controller,
+    required this.onSend,
+    this.isSending = false,
+  });
 
   final TextEditingController controller;
   final VoidCallback onSend;
+  final bool isSending;
 
   @override
   Widget build(BuildContext context) {
     final length = controller.text.characters.length;
-    final segments = length == 0 ? 0 : (length / 160).ceil();
+    final colorScheme = Theme.of(context).colorScheme;
+    final onSurface = colorScheme.onSurface;
+    final canSend = !isSending && length > 0;
     return Container(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
@@ -289,7 +339,7 @@ class _Composer extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(
-            color: AppColors.white.withValues(alpha: 0.06),
+            color: onSurface.withValues(alpha: 0.06),
           ),
         ),
       ),
@@ -303,9 +353,9 @@ class _Composer extends StatelessWidget {
                 vertical: AppSpacing.sm + 2,
               ),
               decoration: BoxDecoration(
-                color: AppColors.white.withValues(alpha: 0.06),
+                color: onSurface.withValues(alpha: 0.06),
                 border: Border.all(
-                  color: AppColors.white.withValues(alpha: 0.09),
+                  color: onSurface.withValues(alpha: 0.09),
                 ),
                 borderRadius: BorderRadius.circular(AppRadius.lg + 2),
               ),
@@ -316,26 +366,32 @@ class _Composer extends StatelessWidget {
                     controller: controller,
                     minLines: 1,
                     maxLines: 4,
+                    maxLength: smsMaxLength,
+                    // The manual counter below replaces the built-in one, which
+                    // the collapsed decoration wouldn't show anyway.
+                    buildCounter: (_, {
+                      required currentLength,
+                      required isFocused,
+                      maxLength,
+                    }) => null,
                     style: TextStyle(
                       fontSize: 14,
-                      color: AppColors.white,
+                      color: onSurface,
                     ),
                     decoration: InputDecoration.collapsed(
                       hintText: 'Message',
                       hintStyle: TextStyle(
-                        color:
-                            AppColors.white.withValues(alpha: 0.4),
+                        color: onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ),
                   if (length > 0) ...[
                     const SizedBox(height: AppSpacing.xs + 1),
                     Text(
-                      '$length / 160 · $segments SMS',
+                      '$length / $smsMaxLength',
                       style: TextStyle(
                         fontSize: 10.5,
-                        color:
-                            AppColors.white.withValues(alpha: 0.4),
+                        color: onSurface.withValues(alpha: 0.4),
                       ),
                     ),
                   ],
@@ -345,15 +401,26 @@ class _Composer extends StatelessWidget {
           ),
           const SizedBox(width: AppSpacing.sm + 2),
           GestureDetector(
-            onTap: onSend,
+            onTap: canSend ? onSend : null,
             child: Container(
               width: 46,
               height: 46,
               decoration: BoxDecoration(
-                color: AppColors.blue500,
+                // Dim the button while a send is in flight or the field is
+                // empty, so it reads as disabled.
+                color: AppColors.blue500.withValues(alpha: canSend ? 1 : 0.5),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.send, color: AppColors.white, size: 22),
+              child: isSending
+                  ? Padding(
+                      padding: const EdgeInsets.all(13),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.2,
+                        valueColor:
+                            AlwaysStoppedAnimation(colorScheme.onPrimary),
+                      ),
+                    )
+                  : Icon(Icons.send, color: colorScheme.onPrimary, size: 22),
             ),
           ),
         ],

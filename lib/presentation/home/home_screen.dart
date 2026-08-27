@@ -164,6 +164,7 @@ class _Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     final status = _statusFor(context);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,7 +199,7 @@ class _Header extends StatelessWidget {
                   Text(
                     status.label,
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.white.withValues(
+                      color: onSurface.withValues(
                         alpha: status.online ? 0.6 : 0.85,
                       ),
                     ),
@@ -311,7 +312,8 @@ class _ActionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = accent ?? AppColors.white.withValues(alpha: 0.7);
+    final onSurface = Theme.of(context).colorScheme.onSurface;
+    final color = accent ?? onSurface.withValues(alpha: 0.7);
     return Tooltip(
       message: tooltip,
       child: InkWell(
@@ -321,7 +323,7 @@ class _ActionChip extends StatelessWidget {
           width: 40,
           height: 40,
           decoration: BoxDecoration(
-            color: AppColors.white.withValues(alpha: 0.06),
+            color: onSurface.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(AppRadius.md + 2),
           ),
           child: Icon(icon, size: 21, color: color),
@@ -564,6 +566,7 @@ class _TrafficCardState extends State<_TrafficCard>
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return BlocConsumer<StatisticsCubit, StatisticsState>(
       listenWhen: (_, current) => current is StatisticsSuccessful,
       listener: (_, _) => _pulse.forward(from: 0),
@@ -652,7 +655,7 @@ class _TrafficCardState extends State<_TrafficCard>
               const SizedBox(height: AppSpacing.md),
               Divider(
                 height: 1,
-                color: AppColors.white.withValues(alpha: 0.08),
+                color: onSurface.withValues(alpha: 0.08),
               ),
               const SizedBox(height: AppSpacing.xs),
               _TrafficRow(
@@ -685,6 +688,7 @@ class _TrafficMetric extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
@@ -705,7 +709,7 @@ class _TrafficMetric extends StatelessWidget {
           Text(
             label,
             style: textTheme.bodySmall?.copyWith(
-              color: AppColors.white.withValues(alpha: 0.5),
+              color: onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -729,10 +733,10 @@ class _TrafficRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Row(
       children: [
-        Icon(icon,
-            size: 18, color: AppColors.white.withValues(alpha: 0.6)),
+        Icon(icon, size: 18, color: onSurface.withValues(alpha: 0.6)),
         const SizedBox(width: AppSpacing.md),
         Expanded(
           child: Text(
@@ -744,7 +748,7 @@ class _TrafficRow extends StatelessWidget {
           value,
           style: textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w700,
-            color: AppColors.white.withValues(alpha: 0.85),
+            color: onSurface.withValues(alpha: 0.85),
           ),
         ),
       ],
@@ -766,6 +770,7 @@ class _SmallIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final onSurface = Theme.of(context).colorScheme.onSurface;
     return Tooltip(
       message: tooltip,
       child: InkWell(
@@ -775,11 +780,10 @@ class _SmallIconButton extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: AppColors.white.withValues(alpha: 0.06),
+            color: onSurface.withValues(alpha: 0.06),
             borderRadius: BorderRadius.circular(AppRadius.md + 2),
           ),
-          child: Icon(icon,
-              size: 19, color: AppColors.white.withValues(alpha: 0.7)),
+          child: Icon(icon, size: 19, color: onSurface.withValues(alpha: 0.7)),
         ),
       ),
     );
